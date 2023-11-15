@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using Netick;
+using Netick.Unity;
 
-public class KccDemoEventsHandler : NetworkEventsListner
+public class KccDemoEventsHandler : NetworkEventsListener
 {
     public Transform SpawnPos;
     public GameObject PlayerPrefab;

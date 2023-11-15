@@ -293,7 +293,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5654542043148214999}
-  - component: {fileID: 373837742050038044}
+  - component: {fileID: 5721928362494149771}
   - component: {fileID: 5651286471523823299}
   - component: {fileID: 5651286471523823300}
   - component: {fileID: 3263674614669310556}
@@ -322,7 +322,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &373837742050038044
+--- !u!114 &5721928362494149771
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -331,19 +331,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 5651286471523823301}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -1698924404, guid: 75145785847c5c04b8a66abc87a456e0, type: 3}
+  m_Script: {fileID: -1923973434, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UseAoI: 0
+  GlobalObjectIdHash: 0
   SceneId: -1
-  GlobalObjectIdHash: 2067060090
-  _PrefabId: 6
-  Persistent: 0
+  _PrefabId: 5
   PrefabRoot: {fileID: 0}
   Children: []
   PrefabIndex: -1
+  Persistent: 0
   predictionMode: 0
-  UseAoI: 0
-  Relevance: 1
 --- !u!114 &5651286471523823299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -356,12 +355,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 523b771177d9557418d528bcf21ba0bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Relevance: 1
   _sensitivityX: 1
   _sensitivityY: 1
   ToggleCrouch: 1
   RenderTransform: {fileID: 5650222378909378417}
   CameraTransform: {fileID: 6152984085407390542}
+  <Position>k__BackingField: {x: 0, y: 0, z: 0}
+  <Velocity>k__BackingField: {x: 0, y: 0, z: 0}
+  <YawPitch>k__BackingField: {x: 0, y: 0}
+  <Crouching>k__BackingField: 0
 --- !u!114 &5651286471523823300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -400,13 +402,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5651286471523823301}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 81865a9f3a053884898b7003ef8a6486, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f0408ef9aacc86419bb2565a571144e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Capsule: {fileID: 2475450197863541907}
   CapsuleRadius: 0.5
-  CapsuleHeight: 1.8
-  CapsuleYOffset: 0.9
+  CapsuleHeight: 2
+  CapsuleYOffset: 1
   CapsulePhysicsMaterial: {fileID: 0}
   GroundDetectionExtraDistance: 0
   MaxStableSlopeAngle: 60
@@ -460,6 +462,6 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
-  m_Height: 1.8
+  m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0.9, z: 0}
+  m_Center: {x: 0, y: 1, z: 0}

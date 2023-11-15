@@ -2274,6 +2274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SandboxPrefab: {fileID: 0}
+  Transport: {fileID: 11400000, guid: 45d8249dfdf511d429f92c6a4a4e26f4, type: 2}
   Mode: 2
   Clients: 1
   AutoStart: 0

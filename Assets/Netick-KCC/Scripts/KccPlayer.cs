@@ -1,11 +1,12 @@
 using KinematicCharacterController;
 using Netick;
+using Netick.Unity;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-public class KccDemoInput : NetworkInput
+public struct KccDemoInput : INetworkInput
 {
     public Vector2 YawPitch;
     public Vector2 Movement;
@@ -13,7 +14,7 @@ public class KccDemoInput : NetworkInput
     public bool CouchInput;
     public bool JumpDown;
 }
-[Networked]
+
 public struct KCCNetworkState
 {
     //public Vector3 BaseVelocity;
@@ -39,6 +40,7 @@ public struct AdditionalKCCNetworkInfo
     public Rigidbody AttachedRigidbody;
     public Vector3 AttachedRigidbodyVelocity;
 }
+
 public class KccPlayer : NetworkBehaviour
 {
     [SerializeField] private float _sensitivityX = 1f;
@@ -56,8 +58,8 @@ public class KccPlayer : NetworkBehaviour
     [Networked] [Smooth] public Vector3 Position { get; set; }
     //we exclude velocity from the state struct cause we might want smoothed velocity for animation purposes
     [Networked] [Smooth] public Vector3 Velocity { get; set; }
-    [Networked] [Smooth(3)] public Vector2 YawPitch { get; set; }
-    Interpolator<Vector2> rotationInterp;
+    [Networked] [Smooth] public Vector2 YawPitch { get; set; }
+    Interpolator rotationInterp;
     [Networked] public bool Crouching { get; set; }
 
     private KinematicCharacterMotorNetick _motor;
@@ -79,7 +81,7 @@ public class KccPlayer : NetworkBehaviour
 
     public override void NetworkStart()
     {
-        rotationInterp = FindInterpolator<Vector2>(3);
+        rotationInterp = FindInterpolator(nameof(YawPitch));
         _motor._PhysicsScene = Sandbox.Physics;
         if (IsInputSource)
         {
@@ -104,7 +106,8 @@ public class KccPlayer : NetworkBehaviour
     {
         //float alpha = Object.IsProxy ? Sandbox.RemoteInterpolation.Alpha : Sandbox.LocalInterpolation.Alpha;  //used for custom interp
         RenderTransform.position = Position;
-        RenderTransform.localRotation = Quaternion.Euler(0, LerpRotation(rotationInterp.From.x, rotationInterp.To.x, rotationInterp.Alpha), 0);
+        bool didGetData = rotationInterp.GetInterpolationData<Vector2>(InterpolationMode.Auto, out var rotationFrom, out var rotationTo, out float alpha);
+        RenderTransform.localRotation = Quaternion.Euler(0, LerpRotation(rotationFrom.x, rotationTo.x, alpha), 0);
         //RenderTransform.localRotation = Quaternion.Euler(0, YawPitch.x, 0);
         CameraTransform.localRotation = Quaternion.Euler(YawPitch.y, 0, 0);
         float height = Crouching ? _locomotion.CrouchedCapsuleHeight : _locomotion.CapsuleStandHeight;
@@ -153,9 +156,11 @@ public class KccPlayer : NetworkBehaviour
             _crouching = Input.GetKey(KeyCode.C);
 
         networkInput.CouchInput = _crouching;
+
+        Sandbox.SetInput<KccDemoInput>(networkInput);
     }
 
-    public override void ApplyToComponent()
+    public override void NetcodeIntoGameEngine()
     {
         _motor.ApplyState(NetickStateToKCCState(KCCState));
         if (!IsInputSource)
@@ -163,7 +168,7 @@ public class KccPlayer : NetworkBehaviour
         _locomotion.SetLocomotionState(AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length]);
     }
 
-    public override void ApplyToBehaviour()
+    public override void GameEngineIntoNetcode()
     {
         KCCState = KCCStateToNetickState(_motor.GetState());
         if (!IsInputSource)
