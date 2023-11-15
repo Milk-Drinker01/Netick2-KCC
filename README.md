@@ -1,4 +1,4 @@
-# Netick-KCC
+# Netick2-KCC
  An implementation of Kinematic Character Controller with Netick Networking
 
 Using this project as a foundation, you will automatically have a highly customizable AAA Character Controller, and a AAA networking solution. 
