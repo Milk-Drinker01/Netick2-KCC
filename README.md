@@ -19,6 +19,4 @@ Features :
  - Look
  - Jump
  - Crouch
- 
- To Do:
- - Create system for networked moving platforms
+ - Example Physics Mover (moving platform) [Requires Netick Pro]
