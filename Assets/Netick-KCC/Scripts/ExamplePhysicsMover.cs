@@ -23,8 +23,6 @@ public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
     private PhysicsMover Mover;
     private Rigidbody rb;
     private Vector3 initalPosition;
-    //private PhysicsMoverState _cachedState = new PhysicsMoverState();
-    //private Vector3 previousPosition;
 
     private void Awake()
     {
@@ -32,17 +30,6 @@ public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
         Mover = GetComponent<PhysicsMover>();
         initalPosition = transform.position;
         Mover.MoverController = this;
-    }
-
-    public override void NetworkStart()
-    {
-        //Mover.MoverController = this;
-    }
-
-    public override void NetworkRender()
-    {
-        //float alpha = Object.IsProxy ? Sandbox.RemoteInterpolation.Alpha : Sandbox.LocalInterpolation.Alpha;
-        //transform.GetChild(0).position = Vector3.Lerp(previousPosition, transform.position, Sandbox.LocalInterpolation.Alpha);
     }
 
     public override void NetworkFixedUpdate()
