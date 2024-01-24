@@ -50,16 +50,15 @@ public class KccPlayer : NetworkBehaviour
     [SerializeField] private Transform RenderTransform;
     [SerializeField] private Transform CameraTransform;
 
-    [Networked(relevancy: Relevancy.InputSource)]
-    public KCCNetworkState KCCState { get; set; }
+
+    [Networked(relevancy: Relevancy.InputSource)] public KCCNetworkState KCCState { get; set; }
     private AdditionalKCCNetworkInfo[] AdditionalStateInfoBuffer;
 
-    //you could use a network transform instead of using using this position variable, if desired
-    [Networked] [Smooth] public Vector3 Position { get; set; }
-    //we exclude velocity from the state struct cause we might want smoothed velocity for animation purposes
-    [Networked] [Smooth] public Vector3 Velocity { get; set; }
+
+    //[Networked] [Smooth] public Vector3 Position { get; set; } //you could use a network transform instead of using using this position variable, if desired
+    [Networked] [Smooth] public Vector3 Velocity { get; set; }  //we exclude velocity from the state struct cause we might want smoothed velocity for animation purposes
     [Networked] [Smooth] public Vector2 YawPitch { get; set; }
-    Interpolator rotationInterp;
+    private Interpolator rotationInterpolator;
     [Networked] public bool Crouching { get; set; }
 
     private KinematicCharacterMotorNetick _motor;
@@ -81,19 +80,25 @@ public class KccPlayer : NetworkBehaviour
 
     public override void NetworkStart()
     {
-        rotationInterp = FindInterpolator(nameof(YawPitch));
+        rotationInterpolator = FindInterpolator(nameof(YawPitch));
         _motor._PhysicsScene = Sandbox.Physics;
-        if (IsInputSource)
+        if (IsPredicted)
         {
             //Cursor.lockState = CursorLockMode.Locked;
             //Cursor.visible = false;
-            AdditionalStateInfoBuffer = new AdditionalKCCNetworkInfo[Sandbox.Config.MaxPredicatedTicks];
-            for (int i = 0; i < AdditionalStateInfoBuffer.Length; i++)
-                AdditionalStateInfoBuffer[i] = new AdditionalKCCNetworkInfo();
+            InitInfoBuffer();
         }
-        else
+        if (!IsInputSource)
             GetComponentInChildren<Camera>().gameObject.SetActive(false);
     }
+
+    void InitInfoBuffer()
+    {
+        AdditionalStateInfoBuffer = new AdditionalKCCNetworkInfo[Sandbox.Config.MaxPredictedTicks];
+        for (int i = 0; i < AdditionalStateInfoBuffer.Length; i++)
+            AdditionalStateInfoBuffer[i] = new AdditionalKCCNetworkInfo();
+    }
+
     public delegate void DestroyPlayer();
     public event DestroyPlayer OnPlayerDestroyed;
     public override void OnInputSourceLeft()
@@ -104,9 +109,8 @@ public class KccPlayer : NetworkBehaviour
 
     public override void NetworkRender()
     {
-        //float alpha = Object.IsProxy ? Sandbox.RemoteInterpolation.Alpha : Sandbox.LocalInterpolation.Alpha;  //used for custom interp
-        RenderTransform.position = Position;
-        bool didGetData = rotationInterp.GetInterpolationData<Vector2>(InterpolationMode.Auto, out var rotationFrom, out var rotationTo, out float alpha);
+        //RenderTransform.position = Position;
+        bool didGetData = rotationInterpolator.GetInterpolationData<Vector2>(InterpolationMode.Auto, out var rotationFrom, out var rotationTo, out float alpha);
         RenderTransform.localRotation = Quaternion.Euler(0, LerpRotation(rotationFrom.x, rotationTo.x, alpha), 0);
         //RenderTransform.localRotation = Quaternion.Euler(0, YawPitch.x, 0);
         CameraTransform.localRotation = Quaternion.Euler(YawPitch.y, 0, 0);
@@ -163,7 +167,7 @@ public class KccPlayer : NetworkBehaviour
     public override void NetcodeIntoGameEngine()
     {
         _motor.ApplyState(NetickStateToKCCState(KCCState));
-        if (!IsInputSource)
+        if (!IsPredicted)
             return;
         _locomotion.SetLocomotionState(AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length]);
     }
@@ -171,7 +175,7 @@ public class KccPlayer : NetworkBehaviour
     public override void GameEngineIntoNetcode()
     {
         KCCState = KCCStateToNetickState(_motor.GetState());
-        if (!IsInputSource)
+        if (!IsPredicted)
             return;
         //InfoBuffer[Sandbox.Tick.TickValue % InfoBuffer.Length] = _locomotion.GetLocomotionState();
         _locomotion.GetLocomotionState(ref AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length]);
@@ -200,23 +204,26 @@ public class KccPlayer : NetworkBehaviour
             _locomotion.SetInputs(ref characterInputs);
         }
 
-        if (Sandbox.IsServer || IsInputSource)
+        if (Sandbox.IsServer || IsPredicted)
         {
             Simulate();
             Velocity = _motor.Velocity;
         }
     }
+
     public void Simulate()
     {
         _motor.UpdatePhase1(Sandbox.FixedDeltaTime);
         _motor.UpdatePhase2(Sandbox.FixedDeltaTime);
         _motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
     }
+
     private KCCNetworkState KCCStateToNetickState(KinematicCharacterMotorState state)
     {
         KCCNetworkState kccNetState = new KCCNetworkState();
 
-        Position = state.Position;
+        transform.position = state.Position;
+        //Position = state.Position;
         Velocity = state.BaseVelocity;
 
         kccNetState.MustUnground = state.MustUnground;
@@ -230,8 +237,10 @@ public class KccPlayer : NetworkBehaviour
         kccNetState.InnerGroundNormal = state.GroundingStatus.InnerGroundNormal;
         kccNetState.OuterGroundNormal = state.GroundingStatus.OuterGroundNormal;
 
-        if (IsInputSource)
+        if (IsPredicted)
         {
+            if (AdditionalStateInfoBuffer == null)
+                InitInfoBuffer();
             AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length].AttachedRigidbody = state.AttachedRigidbody;
             AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length].AttachedRigidbodyVelocity = state.AttachedRigidbodyVelocity;
         }
@@ -243,8 +252,8 @@ public class KccPlayer : NetworkBehaviour
     {
         KinematicCharacterMotorState kccState = new KinematicCharacterMotorState();
 
-        //kccState.Position = transform.position;   //use this if you are using a network transform instead
-        kccState.Position = Position;
+        kccState.Position = transform.position;   //use this if you are using a network transform instead
+        //kccState.Position = Position;
         kccState.Rotation = transform.rotation;
         kccState.BaseVelocity = Velocity;
 
@@ -262,8 +271,10 @@ public class KccPlayer : NetworkBehaviour
             OuterGroundNormal = kccNetState.OuterGroundNormal
         };
 
-        if (IsInputSource)
+        if (IsPredicted)
         {
+            if (AdditionalStateInfoBuffer == null)
+                InitInfoBuffer();
             kccState.AttachedRigidbody = AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length].AttachedRigidbody;
             kccState.AttachedRigidbodyVelocity = AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length].AttachedRigidbodyVelocity;
         }

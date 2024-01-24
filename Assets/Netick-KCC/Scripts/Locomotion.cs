@@ -72,6 +72,7 @@ public class Locomotion : MonoBehaviour, ICharacterController
         // Assign the characterController to the motor
         Motor.CharacterController = this;
         Motor.SetCapsuleDimensions(CapsuleRadius, CapsuleStandHeight, CapsuleStandHeight / 2f);
+        _lookInputVector = Vector3.forward;
     }
 
     /// <summary>

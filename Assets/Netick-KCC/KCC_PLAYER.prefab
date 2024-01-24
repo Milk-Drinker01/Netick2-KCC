@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 3263674614669310556}
   - component: {fileID: 2005175156869349241}
   - component: {fileID: 2475450197863541907}
+  - component: {fileID: 8121600887129290093}
   m_Layer: 9
   m_Name: KCC_PLAYER
   m_TagString: Untagged
@@ -334,7 +335,9 @@ MonoBehaviour:
   m_Script: {fileID: -1923973434, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseAoI: 0
+  _BroadPhaseFilter: 0
+  _SpatialPrioritization: 0
+  _NarrowPhaseFilter: 0
   GlobalObjectIdHash: 0
   SceneId: -1
   _PrefabId: 5
@@ -360,7 +363,6 @@ MonoBehaviour:
   ToggleCrouch: 1
   RenderTransform: {fileID: 5650222378909378417}
   CameraTransform: {fileID: 6152984085407390542}
-  <Position>k__BackingField: {x: 0, y: 0, z: 0}
   <Velocity>k__BackingField: {x: 0, y: 0, z: 0}
   <YawPitch>k__BackingField: {x: 0, y: 0}
   <Crouching>k__BackingField: 0
@@ -377,10 +379,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Motor: {fileID: 3263674614669310556}
-  WalkingSpeed: 2.5
-  SprintMultiplier: 2
-  AccelerationRate: 15
-  DecelerationRate: 15
+  WalkingSpeed: 3
+  SprintMultiplier: 1.75
+  AccelerationRate: 35
+  DecelerationRate: 40
   MaxAirMoveSpeed: 7
   AirAccelerationSpeed: 3
   Drag: 0.1
@@ -389,7 +391,7 @@ MonoBehaviour:
   JumpScalableForwardSpeed: 0
   IgnoredColliders: []
   Gravity: {x: 0, y: -10, z: 0}
-  CapsuleRadius: 0.4
+  CapsuleRadius: 0.5
   CapsuleStandHeight: 1.8
   CrouchedCapsuleHeight: 1
   _isCrouching: 0
@@ -465,3 +467,21 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!114 &8121600887129290093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5651286471523823301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 682374318, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RenderTransform: {fileID: 5650222378909378417}
+  TeleportDistance: 50
+  PositionPrecision: 3
+  Settings: 5
+  TransformSpace: 0
+  _interpolationSource: 0
