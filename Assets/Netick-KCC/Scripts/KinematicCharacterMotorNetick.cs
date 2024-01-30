@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using KinematicCharacterController;
 
-namespace KinematicCharacterController
-{
+//namespace KinematicCharacterController
+//{
     /// <summary>
     /// Component that manages character collisions and movement solving
     /// </summary>
@@ -2542,4 +2543,4 @@ namespace KinematicCharacterController
             return nbHits;
         }
     }
-}
+//}
