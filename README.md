@@ -9,7 +9,7 @@ https://user-images.githubusercontent.com/59656122/225744762-273e0558-4c5a-4648-
 
 Requirements:
 - Kinematic Character Controller ([link](https://assetstore.unity.com/packages/tools/physics/kinematic-character-controller-99131))
-- Netick Networking Engine ([link](https://assetstore.unity.com/packages/tools/network/netick-free-aaa-networking-engine-205414))
+- Netick 2 Networking Engine ([link](https://discord.gg/hYczyr43vK))
 
 Features :
  - Networked Character Controller
@@ -19,6 +19,4 @@ Features :
  - Look
  - Jump
  - Crouch
- 
- To Do:
- - Create system for networked moving platforms
+ - Example Physics Mover (moving platform) [Requires Netick Pro for remote prediction]
