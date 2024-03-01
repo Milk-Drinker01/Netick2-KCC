@@ -340,7 +340,7 @@ MonoBehaviour:
   _NarrowPhaseFilter: 0
   GlobalObjectIdHash: 0
   SceneId: -1
-  _PrefabId: 5
+  _PrefabId: 6
   PrefabRoot: {fileID: 0}
   Children: []
   PrefabIndex: -1
@@ -365,7 +365,6 @@ MonoBehaviour:
   CameraTransform: {fileID: 6152984085407390542}
   <Velocity>k__BackingField: {x: 0, y: 0, z: 0}
   <YawPitch>k__BackingField: {x: 0, y: 0}
-  <Crouching>k__BackingField: 0
 --- !u!114 &5651286471523823300
 MonoBehaviour:
   m_ObjectHideFlags: 0

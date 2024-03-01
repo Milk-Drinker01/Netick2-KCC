@@ -17,15 +17,13 @@ public struct KccDemoInput : INetworkInput
 
 public struct KCCNetworkState
 {
-    //public Vector3 BaseVelocity;
-
-    public bool MustUnground;
+    public NetworkBool MustUnground;
     public float MustUngroundTime;
-    public bool LastMovementIterationFoundAnyGround;
+    public NetworkBool LastMovementIterationFoundAnyGround;
 
-    public bool FoundAnyGround;
-    public bool IsStableOnGround;
-    public bool SnappingPrevented;
+    public NetworkBool FoundAnyGround;
+    public NetworkBool IsStableOnGround;
+    public NetworkBool SnappingPrevented;
     public Vector3 GroundNormal;
     public Vector3 InnerGroundNormal;
     public Vector3 OuterGroundNormal;
@@ -55,11 +53,11 @@ public class KccPlayer : NetworkBehaviour
     private AdditionalKCCNetworkInfo[] AdditionalStateInfoBuffer;
 
 
-    //[Networked] [Smooth] public Vector3 Position { get; set; } //you could use a network transform instead of using using this position variable, if desired
     [Networked] [Smooth] public Vector3 Velocity { get; set; }  //we exclude velocity from the state struct cause we might want smoothed velocity for animation purposes
     [Networked] [Smooth] public Vector2 YawPitch { get; set; }
+
     private Interpolator rotationInterpolator;
-    [Networked] public bool Crouching { get; set; }
+    [Networked] public NetworkBool Crouching { get; set; }
 
     private KinematicCharacterMotorNetick _motor;
     private Locomotion _locomotion;
@@ -82,12 +80,10 @@ public class KccPlayer : NetworkBehaviour
     {
         rotationInterpolator = FindInterpolator(nameof(YawPitch));
         _motor._PhysicsScene = Sandbox.Physics;
+
         if (IsPredicted)
-        {
-            //Cursor.lockState = CursorLockMode.Locked;
-            //Cursor.visible = false;
             InitInfoBuffer();
-        }
+
         if (!IsInputSource)
             GetComponentInChildren<Camera>().gameObject.SetActive(false);
     }
@@ -111,7 +107,7 @@ public class KccPlayer : NetworkBehaviour
     {
         //RenderTransform.position = Position;
         bool didGetData = rotationInterpolator.GetInterpolationData<Vector2>(InterpolationMode.Auto, out var rotationFrom, out var rotationTo, out float alpha);
-        RenderTransform.localRotation = Quaternion.Euler(0, LerpRotation(rotationFrom.x, rotationTo.x, alpha), 0);
+        RenderTransform.rotation = Quaternion.Euler(0, LerpRotation(rotationFrom.x, rotationTo.x, alpha), 0);
         //RenderTransform.localRotation = Quaternion.Euler(0, YawPitch.x, 0);
         CameraTransform.localRotation = Quaternion.Euler(YawPitch.y, 0, 0);
         float height = Crouching ? _locomotion.CrouchedCapsuleHeight : _locomotion.CapsuleStandHeight;
@@ -223,7 +219,7 @@ public class KccPlayer : NetworkBehaviour
         KCCNetworkState kccNetState = new KCCNetworkState();
 
         transform.position = state.Position;
-        //Position = state.Position;
+        transform.rotation = state.Rotation;
         Velocity = state.BaseVelocity;
 
         kccNetState.MustUnground = state.MustUnground;
@@ -252,8 +248,7 @@ public class KccPlayer : NetworkBehaviour
     {
         KinematicCharacterMotorState kccState = new KinematicCharacterMotorState();
 
-        kccState.Position = transform.position;   //use this if you are using a network transform instead
-        //kccState.Position = Position;
+        kccState.Position = transform.position;
         kccState.Rotation = transform.rotation;
         kccState.BaseVelocity = Velocity;
 

@@ -25,7 +25,7 @@ public class KccDemoEventsHandler : NetworkEventsListener
             var p = sandbox.ConnectedPlayers[i];
 
             var spawnPos = SpawnPos.position + Vector3.left * (i);
-            var player = sandbox.NetworkInstantiate(PlayerPrefab, spawnPos, Quaternion.identity, p).GetComponent<KccPlayer>();
+            var player = sandbox.NetworkInstantiate(PlayerPrefab, spawnPos, Quaternion.identity, p);
             p.PlayerObject = player.gameObject;
         }
     }
@@ -34,7 +34,7 @@ public class KccDemoEventsHandler : NetworkEventsListener
     public override void OnClientConnected(NetworkSandbox sandbox, NetworkConnection client)
     {
         var spawnPos = SpawnPos.position + Vector3.left * (1 + sandbox.ConnectedPlayers.Count);
-        var player = sandbox.NetworkInstantiate(PlayerPrefab, spawnPos, Quaternion.identity, client).GetComponent<KccPlayer>();
+        var player = sandbox.NetworkInstantiate(PlayerPrefab, spawnPos, Quaternion.identity, client);
         client.PlayerObject = player.gameObject;
     }
 }
