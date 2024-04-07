@@ -670,6 +670,7 @@ MonoBehaviour:
   _BroadPhaseFilter: 0
   _SpatialPrioritization: 0
   _NarrowPhaseFilter: 0
+  AddToNetworkLoop: 1
   GlobalObjectIdHash: 2877914664
   SceneId: 5
   _PrefabId: -1
@@ -677,7 +678,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  _predictionMode: 0
+  _predictionMode: 1
 --- !u!4 &106340776
 Transform:
   m_ObjectHideFlags: 0
@@ -1505,6 +1506,7 @@ MonoBehaviour:
   _BroadPhaseFilter: 0
   _SpatialPrioritization: 0
   _NarrowPhaseFilter: 0
+  AddToNetworkLoop: 1
   GlobalObjectIdHash: 341724114
   SceneId: 2
   _PrefabId: -1
@@ -1512,7 +1514,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  _predictionMode: 0
+  _predictionMode: 1
 --- !u!4 &390926093
 Transform:
   m_ObjectHideFlags: 0
@@ -2773,7 +2775,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpawnPos: {fileID: 10129275}
   PlayerPrefab: {fileID: 5651286471523823301, guid: 2f737f8d46a0f704b87d6662fb5b8010, type: 3}
-  SpawnPlayerForHost: 0
 --- !u!1 &880133142
 GameObject:
   m_ObjectHideFlags: 0
@@ -3579,6 +3580,7 @@ MonoBehaviour:
   _BroadPhaseFilter: 0
   _SpatialPrioritization: 0
   _NarrowPhaseFilter: 0
+  AddToNetworkLoop: 1
   GlobalObjectIdHash: 328231256
   SceneId: 1
   _PrefabId: -1
@@ -3586,7 +3588,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  _predictionMode: 0
+  _predictionMode: 1
 --- !u!65 &1175825669
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5000,6 +5002,7 @@ MonoBehaviour:
   _BroadPhaseFilter: 0
   _SpatialPrioritization: 0
   _NarrowPhaseFilter: 0
+  AddToNetworkLoop: 1
   GlobalObjectIdHash: 1602387979
   SceneId: 3
   _PrefabId: -1
@@ -5007,7 +5010,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  _predictionMode: 0
+  _predictionMode: 1
 --- !u!4 &1694389367
 Transform:
   m_ObjectHideFlags: 0
@@ -5539,6 +5542,7 @@ MonoBehaviour:
   _BroadPhaseFilter: 0
   _SpatialPrioritization: 0
   _NarrowPhaseFilter: 0
+  AddToNetworkLoop: 1
   GlobalObjectIdHash: 2747164345
   SceneId: 4
   _PrefabId: -1
@@ -5546,7 +5550,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  _predictionMode: 0
+  _predictionMode: 1
 --- !u!4 &1985525616
 Transform:
   m_ObjectHideFlags: 0
