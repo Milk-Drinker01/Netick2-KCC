@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.karrar.netick": {
+      "version": "https://github.com/karrarrahim/NetickForUnity.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.nuget.mono-cecil": "1.11.4"
+      },
+      "hash": "298385aecebf729131b449ae02059fb1ed744c50"
+    },
     "com.unity.collab-proxy": {
       "version": "1.17.7",
       "depth": 0,

@@ -677,7 +677,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  predictionMode: 1
+  _predictionMode: 0
 --- !u!4 &106340776
 Transform:
   m_ObjectHideFlags: 0
@@ -1512,7 +1512,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  predictionMode: 1
+  _predictionMode: 0
 --- !u!4 &390926093
 Transform:
   m_ObjectHideFlags: 0
@@ -2773,7 +2773,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SpawnPos: {fileID: 10129275}
   PlayerPrefab: {fileID: 5651286471523823301, guid: 2f737f8d46a0f704b87d6662fb5b8010, type: 3}
-  SpawnPlayerForHost: 1
+  SpawnPlayerForHost: 0
 --- !u!1 &880133142
 GameObject:
   m_ObjectHideFlags: 0
@@ -3586,7 +3586,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  predictionMode: 1
+  _predictionMode: 0
 --- !u!65 &1175825669
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5007,7 +5007,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  predictionMode: 1
+  _predictionMode: 0
 --- !u!4 &1694389367
 Transform:
   m_ObjectHideFlags: 0
@@ -5546,7 +5546,7 @@ MonoBehaviour:
   Children: []
   PrefabIndex: -1
   Persistent: 0
-  predictionMode: 1
+  _predictionMode: 0
 --- !u!4 &1985525616
 Transform:
   m_ObjectHideFlags: 0

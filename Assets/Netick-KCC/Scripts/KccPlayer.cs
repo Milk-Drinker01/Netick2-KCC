@@ -106,7 +106,7 @@ public class KccPlayer : NetworkBehaviour
     public override void NetworkRender()
     {
         //RenderTransform.position = Position;
-        bool didGetData = rotationInterpolator.GetInterpolationData<Vector2>(InterpolationMode.Auto, out var rotationFrom, out var rotationTo, out float alpha);
+        bool didGetData = rotationInterpolator.GetInterpolationData<Vector2>(InterpolationSource.Auto, out var rotationFrom, out var rotationTo, out float alpha);
         RenderTransform.rotation = Quaternion.Euler(0, LerpRotation(rotationFrom.x, rotationTo.x, alpha), 0);
         //RenderTransform.localRotation = Quaternion.Euler(0, YawPitch.x, 0);
         CameraTransform.localRotation = Quaternion.Euler(YawPitch.y, 0, 0);
