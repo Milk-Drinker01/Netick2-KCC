@@ -31,10 +31,9 @@ public struct KCCNetworkState
 
 //put things that you dont really give a fuck about being networked here
 //but need to be rolled back in the simulation
-public struct AdditionalKCCNetworkInfo
+public class AdditionalKCCNetworkInfo
 {
     public bool JumpConsumed;
-    public bool JumpedThisFrame;
     public Rigidbody AttachedRigidbody;
     public Vector3 AttachedRigidbodyVelocity;
 }
@@ -163,85 +162,6 @@ public class KccPlayer : NetworkBehaviour
     public override void NetcodeIntoGameEngine()
     {
         _motor.ApplyState(NetickStateToKCCState(KCCState));
-        if (!IsPredicted)
-            return;
-        _locomotion.SetLocomotionState(AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length]);
-    }
-
-    public override void GameEngineIntoNetcode()
-    {
-        KCCState = KCCStateToNetickState(_motor.GetState());
-        if (!IsPredicted)
-            return;
-        //InfoBuffer[Sandbox.Tick.TickValue % InfoBuffer.Length] = _locomotion.GetLocomotionState();
-        _locomotion.GetLocomotionState(ref AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length]);
-    }
-
-    public override void NetworkFixedUpdate()
-    {
-        if (FetchInput(out KccDemoInput input))
-        {
-            YawPitch = ClampAngles(YawPitch + input.YawPitch);
-            LocomotionInputs characterInputs = new LocomotionInputs();
-            characterInputs.MoveAxisForward = input.Movement.y;
-            characterInputs.MoveAxisRight = input.Movement.x;
-            characterInputs.sprint = input.Sprint && characterInputs.MoveAxisForward > 0;
-            characterInputs.CameraRotation = Quaternion.Euler(0, YawPitch.x, 0);
-
-            characterInputs.JumpDown = input.JumpDown;
-
-            if (!Crouching && input.CouchInput)
-                characterInputs.CrouchDown = true;
-            if (Crouching && !input.CouchInput)
-                characterInputs.CrouchUp = true;
-
-            Crouching = input.CouchInput;
-
-            _locomotion.SetInputs(ref characterInputs);
-        }
-
-        if (Sandbox.IsServer || IsPredicted)
-        {
-            Simulate();
-            Velocity = _motor.Velocity;
-        }
-    }
-
-    public void Simulate()
-    {
-        _motor.UpdatePhase1(Sandbox.FixedDeltaTime);
-        _motor.UpdatePhase2(Sandbox.FixedDeltaTime);
-        _motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
-    }
-
-    private KCCNetworkState KCCStateToNetickState(KinematicCharacterMotorState state)
-    {
-        KCCNetworkState kccNetState = new KCCNetworkState();
-
-        transform.position = state.Position;
-        transform.rotation = state.Rotation;
-        Velocity = state.BaseVelocity;
-
-        kccNetState.MustUnground = state.MustUnground;
-        kccNetState.MustUngroundTime = state.MustUngroundTime;
-        kccNetState.LastMovementIterationFoundAnyGround = state.LastMovementIterationFoundAnyGround;
-
-        kccNetState.FoundAnyGround = state.GroundingStatus.FoundAnyGround;
-        kccNetState.IsStableOnGround = state.GroundingStatus.IsStableOnGround;
-        kccNetState.SnappingPrevented = state.GroundingStatus.SnappingPrevented;
-        kccNetState.GroundNormal = state.GroundingStatus.GroundNormal;
-        kccNetState.InnerGroundNormal = state.GroundingStatus.InnerGroundNormal;
-        kccNetState.OuterGroundNormal = state.GroundingStatus.OuterGroundNormal;
-
-        if (IsPredicted)
-        {
-            if (AdditionalStateInfoBuffer == null)
-                InitInfoBuffer();
-            AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length].AttachedRigidbody = state.AttachedRigidbody;
-            AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length].AttachedRigidbodyVelocity = state.AttachedRigidbodyVelocity;
-        }
-
-        return kccNetState;
     }
 
     private KinematicCharacterMotorState NetickStateToKCCState(KCCNetworkState kccNetState)
@@ -270,11 +190,87 @@ public class KccPlayer : NetworkBehaviour
         {
             if (AdditionalStateInfoBuffer == null)
                 InitInfoBuffer();
-            kccState.AttachedRigidbody = AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length].AttachedRigidbody;
-            kccState.AttachedRigidbodyVelocity = AdditionalStateInfoBuffer[Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length].AttachedRigidbodyVelocity;
+            int bufferPosition = Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length;
+            kccState.AttachedRigidbody = AdditionalStateInfoBuffer[bufferPosition].AttachedRigidbody;
+            kccState.AttachedRigidbodyVelocity = AdditionalStateInfoBuffer[bufferPosition].AttachedRigidbodyVelocity;
+            _locomotion.SetLocomotionState(AdditionalStateInfoBuffer[bufferPosition]);
         }
 
         return kccState;
+    }
+
+    public override void GameEngineIntoNetcode()
+    {
+        KCCState = KCCStateToNetickState(_motor.GetState());
+    }
+
+    private KCCNetworkState KCCStateToNetickState(KinematicCharacterMotorState state)
+    {
+        KCCNetworkState kccNetState = new KCCNetworkState();
+
+        transform.position = state.Position;
+        transform.rotation = state.Rotation;
+        Velocity = state.BaseVelocity;
+
+        kccNetState.MustUnground = state.MustUnground;
+        kccNetState.MustUngroundTime = state.MustUngroundTime;
+        kccNetState.LastMovementIterationFoundAnyGround = state.LastMovementIterationFoundAnyGround;
+
+        kccNetState.FoundAnyGround = state.GroundingStatus.FoundAnyGround;
+        kccNetState.IsStableOnGround = state.GroundingStatus.IsStableOnGround;
+        kccNetState.SnappingPrevented = state.GroundingStatus.SnappingPrevented;
+        kccNetState.GroundNormal = state.GroundingStatus.GroundNormal;
+        kccNetState.InnerGroundNormal = state.GroundingStatus.InnerGroundNormal;
+        kccNetState.OuterGroundNormal = state.GroundingStatus.OuterGroundNormal;
+
+        if (IsPredicted)
+        {
+            if (AdditionalStateInfoBuffer == null)
+                InitInfoBuffer();
+            int bufferPosition = Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length;
+            AdditionalStateInfoBuffer[bufferPosition].AttachedRigidbody = state.AttachedRigidbody;
+            AdditionalStateInfoBuffer[bufferPosition].AttachedRigidbodyVelocity = state.AttachedRigidbodyVelocity;
+            _locomotion.GetLocomotionState(AdditionalStateInfoBuffer[bufferPosition]);
+        }
+
+        return kccNetState;
+    }
+
+    public override void NetworkFixedUpdate()
+    {
+        if (FetchInput(out KccDemoInput input))
+        {
+            YawPitch = ClampAngles(YawPitch + input.YawPitch);
+            LocomotionInputs characterInputs = new LocomotionInputs();
+            characterInputs.MoveAxisForward = input.Movement.y;
+            characterInputs.MoveAxisRight = input.Movement.x;
+            characterInputs.sprint = input.Sprint && characterInputs.MoveAxisForward > 0;
+            characterInputs.CameraRotation = Quaternion.Euler(0, YawPitch.x, 0);
+
+            characterInputs.JumpDown = input.JumpDown;
+
+            if (!Crouching && input.CouchInput)
+                characterInputs.CrouchDown = true;
+            if (Crouching && !input.CouchInput)
+                characterInputs.CrouchUp = true;
+
+            Crouching = input.CouchInput;
+
+            _locomotion.SetInputs(ref characterInputs);
+        }
+
+        if (Sandbox.IsServer || IsPredicted)
+        {
+            Simulate();
+            Velocity = _motor.BaseVelocity;
+        }
+    }
+
+    public void Simulate()
+    {
+        _motor.UpdatePhase1(Sandbox.FixedDeltaTime);
+        _motor.UpdatePhase2(Sandbox.FixedDeltaTime);
+        _motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
     }
 
     private Vector2 ClampAngles(Vector2 _yawPitch)

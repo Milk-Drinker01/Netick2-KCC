@@ -20,7 +20,7 @@ public class KccDemoEventsHandler : NetworkEventsListener
 
             var p = sandbox.ConnectedPlayers[i];
 
-            var spawnPos = SpawnPos.position + Vector3.left * (i);
+            var spawnPos = SpawnPos.position + Vector3.left * (i * 1.1f);
             var player = sandbox.NetworkInstantiate(PlayerPrefab, spawnPos, Quaternion.identity, p);
             p.PlayerObject = player.gameObject;
         }
@@ -29,7 +29,7 @@ public class KccDemoEventsHandler : NetworkEventsListener
     // This is called on the server when a client has connected.
     public override void OnPlayerConnected(NetworkSandbox sandbox, Netick.NetworkPlayer client)
     {
-        var spawnPos = SpawnPos.position + Vector3.left * (1 + sandbox.ConnectedPlayers.Count);
+        var spawnPos = SpawnPos.position + Vector3.left * ((1 + sandbox.ConnectedPlayers.Count) * 1.1f);
         var player = sandbox.NetworkInstantiate(PlayerPrefab, spawnPos, Quaternion.identity, client);
         client.PlayerObject = player.gameObject;
     }
