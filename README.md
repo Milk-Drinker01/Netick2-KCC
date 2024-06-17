@@ -19,4 +19,4 @@ Features :
  - Look
  - Jump
  - Crouch
- - Example Physics Mover (moving platform) [Requires Netick Pro for remote prediction]
+ - Example Physics Mover (moving platform)
