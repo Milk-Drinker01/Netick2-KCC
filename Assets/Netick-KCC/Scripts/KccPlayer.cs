@@ -1,10 +1,6 @@
-using KinematicCharacterController;
+using UnityEngine;
 using Netick;
 using Netick.Unity;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 
 public struct KccDemoInput : INetworkInput
 {
@@ -15,30 +11,7 @@ public struct KccDemoInput : INetworkInput
     public bool JumpDown;
 }
 
-public struct KCCNetworkState
-{
-    public NetworkBool MustUnground;
-    public float MustUngroundTime;
-    public NetworkBool LastMovementIterationFoundAnyGround;
-
-    public NetworkBool FoundAnyGround;
-    public NetworkBool IsStableOnGround;
-    public NetworkBool SnappingPrevented;
-    public Vector3 GroundNormal;
-    public Vector3 InnerGroundNormal;
-    public Vector3 OuterGroundNormal;
-}
-
-//put things that you dont really give a fuck about being networked here
-//but need to be rolled back in the simulation
-public class AdditionalKCCNetworkInfo
-{
-    public bool JumpConsumed;
-    public Rigidbody AttachedRigidbody;
-    public Vector3 AttachedRigidbodyVelocity;
-}
-
-public class KccPlayer : NetworkBehaviour
+public class KccPlayer : NetickKccBase
 {
     [SerializeField] private float _sensitivityX = 1f;
     [SerializeField] private float _sensitivityY = 1f;
@@ -46,52 +19,30 @@ public class KccPlayer : NetworkBehaviour
 
     [SerializeField] private Transform RenderTransform;
     [SerializeField] private Transform CameraTransform;
-
-
-    [Networked(relevancy: Relevancy.InputSource)] public KCCNetworkState KCCState { get; set; }
-    private AdditionalKCCNetworkInfo[] AdditionalStateInfoBuffer;
-
-
-    [Networked] [Smooth] public Vector3 Velocity { get; set; }  //we exclude velocity from the state struct cause we might want smoothed velocity for animation purposes
+    
     [Networked] [Smooth] public Vector2 YawPitch { get; set; }
 
     private Interpolator rotationInterpolator;
     [Networked] public NetworkBool Crouching { get; set; }
 
-    private KinematicCharacterMotorNetick _motor;
     private Locomotion _locomotion;
+
     private bool _crouching;
+
 
     private void Awake()
     {
-        _motor = GetComponent<KinematicCharacterMotorNetick>();
-        _locomotion = GetComponent<Locomotion>();
-    }
-
-    void Start()
-    {
-        // We disable Settings.AutoSimulation + Settings.Interpolate of KinematicCharacterSystem to essentially handle the simulation ourself
-        KinematicCharacterSystem.Settings.AutoSimulation = false;
-        KinematicCharacterSystem.Settings.Interpolate = false;
+        Initialize();
+        TryGetComponent<Locomotion>(out _locomotion);
     }
 
     public override void NetworkStart()
     {
         rotationInterpolator = FindInterpolator(nameof(YawPitch));
-        _motor._PhysicsScene = Sandbox.Physics;
-
-        if (IsPredicted)
-            InitInfoBuffer();
+        SetPhysicsScene();
 
         if (!IsInputSource)
             GetComponentInChildren<Camera>().gameObject.SetActive(false);
-    }
-
-    void InitInfoBuffer()
-    {
-        AdditionalStateInfoBuffer = new AdditionalKCCNetworkInfo[Sandbox.Config.MaxPredictedTicks];
-        for (int i = 0; i < AdditionalStateInfoBuffer.Length; i++)
-            AdditionalStateInfoBuffer[i] = new AdditionalKCCNetworkInfo();
     }
 
     public delegate void DestroyPlayer();
@@ -122,6 +73,7 @@ public class KccPlayer : NetworkBehaviour
     {
         if (!IsInputSource || !Sandbox.InputEnabled)
             return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (Cursor.lockState == CursorLockMode.Locked)
@@ -134,8 +86,9 @@ public class KccPlayer : NetworkBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
-        }    
+        }
 
+        #region poll input
         var camInput = new Vector2(Input.GetAxisRaw("Mouse X") * _sensitivityX, Input.GetAxisRaw("Mouse Y") * -_sensitivityY);
         camInput *= (Cursor.lockState == CursorLockMode.Locked ? 1 : 0);
 
@@ -155,85 +108,9 @@ public class KccPlayer : NetworkBehaviour
             _crouching = Input.GetKey(KeyCode.C);
 
         networkInput.CouchInput = _crouching;
+        #endregion
 
         Sandbox.SetInput<KccDemoInput>(networkInput);
-    }
-
-    public override void NetcodeIntoGameEngine()
-    {
-        _motor.ApplyState(NetickStateToKCCState(KCCState));
-    }
-
-    private KinematicCharacterMotorState NetickStateToKCCState(KCCNetworkState kccNetState)
-    {
-        KinematicCharacterMotorState kccState = new KinematicCharacterMotorState();
-
-        kccState.Position = transform.position;
-        kccState.Rotation = transform.rotation;
-        kccState.BaseVelocity = Velocity;
-
-        kccState.MustUnground = kccNetState.MustUnground;
-        kccState.MustUngroundTime = kccNetState.MustUngroundTime;
-        kccState.LastMovementIterationFoundAnyGround = kccNetState.LastMovementIterationFoundAnyGround;
-
-        kccState.GroundingStatus = new CharacterTransientGroundingReport()
-        {
-            FoundAnyGround = kccNetState.FoundAnyGround,
-            IsStableOnGround = kccNetState.IsStableOnGround,
-            SnappingPrevented = kccNetState.SnappingPrevented,
-            GroundNormal = kccNetState.GroundNormal,
-            InnerGroundNormal = kccNetState.InnerGroundNormal,
-            OuterGroundNormal = kccNetState.OuterGroundNormal
-        };
-
-        if (IsPredicted)
-        {
-            if (AdditionalStateInfoBuffer == null)
-                InitInfoBuffer();
-            int bufferPosition = Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length;
-            kccState.AttachedRigidbody = AdditionalStateInfoBuffer[bufferPosition].AttachedRigidbody;
-            kccState.AttachedRigidbodyVelocity = AdditionalStateInfoBuffer[bufferPosition].AttachedRigidbodyVelocity;
-            _locomotion.SetLocomotionState(AdditionalStateInfoBuffer[bufferPosition]);
-        }
-
-        return kccState;
-    }
-
-    public override void GameEngineIntoNetcode()
-    {
-        KCCState = KCCStateToNetickState(_motor.GetState());
-    }
-
-    private KCCNetworkState KCCStateToNetickState(KinematicCharacterMotorState state)
-    {
-        KCCNetworkState kccNetState = new KCCNetworkState();
-
-        transform.position = state.Position;
-        transform.rotation = state.Rotation;
-        Velocity = state.BaseVelocity;
-
-        kccNetState.MustUnground = state.MustUnground;
-        kccNetState.MustUngroundTime = state.MustUngroundTime;
-        kccNetState.LastMovementIterationFoundAnyGround = state.LastMovementIterationFoundAnyGround;
-
-        kccNetState.FoundAnyGround = state.GroundingStatus.FoundAnyGround;
-        kccNetState.IsStableOnGround = state.GroundingStatus.IsStableOnGround;
-        kccNetState.SnappingPrevented = state.GroundingStatus.SnappingPrevented;
-        kccNetState.GroundNormal = state.GroundingStatus.GroundNormal;
-        kccNetState.InnerGroundNormal = state.GroundingStatus.InnerGroundNormal;
-        kccNetState.OuterGroundNormal = state.GroundingStatus.OuterGroundNormal;
-
-        if (IsPredicted)
-        {
-            if (AdditionalStateInfoBuffer == null)
-                InitInfoBuffer();
-            int bufferPosition = Sandbox.Tick.TickValue % AdditionalStateInfoBuffer.Length;
-            AdditionalStateInfoBuffer[bufferPosition].AttachedRigidbody = state.AttachedRigidbody;
-            AdditionalStateInfoBuffer[bufferPosition].AttachedRigidbodyVelocity = state.AttachedRigidbodyVelocity;
-            _locomotion.GetLocomotionState(AdditionalStateInfoBuffer[bufferPosition]);
-        }
-
-        return kccNetState;
     }
 
     public override void NetworkFixedUpdate()
@@ -262,15 +139,7 @@ public class KccPlayer : NetworkBehaviour
         if (Sandbox.IsServer || IsPredicted)
         {
             Simulate();
-            Velocity = _motor.BaseVelocity;
         }
-    }
-
-    public void Simulate()
-    {
-        _motor.UpdatePhase1(Sandbox.FixedDeltaTime);
-        _motor.UpdatePhase2(Sandbox.FixedDeltaTime);
-        _motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
     }
 
     private Vector2 ClampAngles(Vector2 _yawPitch)

@@ -262,7 +262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5650222378909378417}
   m_Layer: 0
-  m_Name: Root
+  m_Name: Render
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -294,12 +294,12 @@ GameObject:
   m_Component:
   - component: {fileID: 5654542043148214999}
   - component: {fileID: 5721928362494149771}
-  - component: {fileID: 5651286471523823299}
+  - component: {fileID: -4302345474651264804}
   - component: {fileID: 5651286471523823300}
   - component: {fileID: 3263674614669310556}
   - component: {fileID: 2005175156869349241}
   - component: {fileID: 2475450197863541907}
-  - component: {fileID: 8121600887129290093}
+  - component: {fileID: -6147282963184424978}
   m_Layer: 9
   m_Name: KCC_PLAYER
   m_TagString: Untagged
@@ -347,7 +347,7 @@ MonoBehaviour:
   PrefabIndex: -1
   Persistent: 0
   _predictionMode: 0
---- !u!114 &5651286471523823299
+--- !u!114 &-4302345474651264804
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -359,13 +359,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 523b771177d9557418d528bcf21ba0bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Velocity>k__BackingField: {x: 0, y: 0, z: 0}
   _sensitivityX: 1
   _sensitivityY: 1
   ToggleCrouch: 1
   RenderTransform: {fileID: 5650222378909378417}
   CameraTransform: {fileID: 6152984085407390542}
-  <Velocity>k__BackingField: {x: 0, y: 0, z: 0}
   <YawPitch>k__BackingField: {x: 0, y: 0}
+  <Crouching>k__BackingField:
+    RawValue: 0
 --- !u!114 &5651286471523823300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -467,7 +469,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &8121600887129290093
+--- !u!114 &-6147282963184424978
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -482,6 +484,11 @@ MonoBehaviour:
   RenderTransform: {fileID: 5650222378909378417}
   TeleportDistance: 50
   PositionPrecision: 3
-  Settings: 5
-  TransformSpace: 0
+  Settings: 31
+  TransformSpace: 1
+  EnablePredictionErrorCorrectionSmoothing: 0
+  InterpolationMultiplier: 20
+  CorrectionMultiplier: 3
+  CorrectionMaxBlendAlpha: 0.7
+  TeleportErrorThreshold: 50
   _interpolationSource: 0

@@ -171,23 +171,24 @@ public class Locomotion : MonoBehaviour, ICharacterController
 
     private Quaternion _tmpTransientRot;
 
-    public void SetLocomotionState(AdditionalKCCNetworkInfo state)
-    {
-        _jumpConsumed = state.JumpConsumed;
-    }
-
-    public void GetLocomotionState(AdditionalKCCNetworkInfo state)
-    {
-        state.JumpConsumed = _jumpConsumed;
-    }
-
-
     /// <summary>
     /// (Called by KinematicCharacterMotor during its update cycle)
     /// This is called before the character begins its movement update
     /// </summary>
     public void BeforeCharacterUpdate(float deltaTime)
     {
+        // Handle jump-related values
+        {
+
+            if (AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)
+            {
+                // If we're on a ground surface, reset jumping values
+                if (!_jumpedThisFrame)
+                {
+                    _jumpConsumed = false;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -338,19 +339,6 @@ public class Locomotion : MonoBehaviour, ICharacterController
         {
             case CharacterState.Default:
                 {
-                    // Handle jump-related values
-                    {
-
-                        if (AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)
-                        {
-                            // If we're on a ground surface, reset jumping values
-                            if (!_jumpedThisFrame)
-                            {
-                                _jumpConsumed = false;
-                            }
-                        }
-                    }
-
                     // Handle uncrouching
                     if (_isCrouching && !_shouldBeCrouching)
                     {
