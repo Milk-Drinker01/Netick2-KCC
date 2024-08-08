@@ -29,6 +29,7 @@ public class NetickKccBase : NetworkBehaviour
         TryGetComponent<KinematicCharacterMotorNetick>(out _motor);
 
         // We disable Settings.AutoSimulation + Settings.Interpolate of KinematicCharacterSystem to essentially handle the simulation ourself
+        KinematicCharacterSystem.EnsureCreation();
         KinematicCharacterSystem.Settings.AutoSimulation = false;
         KinematicCharacterSystem.Settings.Interpolate = false;
     }

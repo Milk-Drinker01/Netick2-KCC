@@ -57,6 +57,7 @@ public class Locomotion : MonoBehaviour, ICharacterController
     private bool _jumpRequested = false;
     private bool _jumpConsumed = false;
     private bool _jumpedThisFrame = false;
+    public bool GetJumpedThisFrame() { return _jumpedThisFrame; }
     private Vector3 _internalVelocityAdd = Vector3.zero;
     private bool _shouldBeCrouching = false;
     [HideInInspector] public bool _isCrouching = false;
