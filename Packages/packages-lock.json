@@ -7,7 +7,7 @@
       "dependencies": {
         "com.unity.nuget.mono-cecil": "1.11.4"
       },
-      "hash": "ad06e0c2726c50459d3085dd7a91ff8e761fadbd"
+      "hash": "e671cdbf1e08566b980731d505ceddfc74b14e35"
     },
     "com.unity.collab-proxy": {
       "version": "2.2.0",
@@ -141,9 +141,9 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {
+        "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.director": "1.0.0",
         "com.unity.modules.animation": "1.0.0",
-        "com.unity.modules.audio": "1.0.0",
         "com.unity.modules.particlesystem": "1.0.0"
       },
       "url": "https://packages.unity.com"
