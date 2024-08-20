@@ -585,6 +585,11 @@ MonoBehaviour:
   PositionPrecision: 3
   Settings: 3
   TransformSpace: 0
+  EnablePredictionErrorCorrectionSmoothing: 0
+  InterpolationMultiplier: 20
+  CorrectionMultiplier: 3
+  CorrectionMaxBlendAlpha: 0.7
+  TeleportErrorThreshold: 50
   _interpolationSource: 0
 --- !u!114 &106340771
 MonoBehaviour:
@@ -1379,7 +1384,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 375435379}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1472462683, guid: 75145785847c5c04b8a66abc87a456e0, type: 3}
+  m_Script: {fileID: -355052428, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &390926086
@@ -1421,6 +1426,11 @@ MonoBehaviour:
   PositionPrecision: 3
   Settings: 3
   TransformSpace: 0
+  EnablePredictionErrorCorrectionSmoothing: 0
+  InterpolationMultiplier: 20
+  CorrectionMultiplier: 3
+  CorrectionMaxBlendAlpha: 0.7
+  TeleportErrorThreshold: 50
   _interpolationSource: 0
 --- !u!114 &390926088
 MonoBehaviour:
@@ -1705,6 +1715,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -2744,6 +2755,8 @@ MonoBehaviour:
   StartServerInMultiplePeersMode: 1
   AutoStart: 0
   AutoConnect: 0
+  ShowDisconnectButton: 1
+  ShowConnectButton: 1
   Port: 36339
   ServerIPAddress: 127.0.0.1
 --- !u!4 &847424782
@@ -3619,6 +3632,11 @@ MonoBehaviour:
   PositionPrecision: 3
   Settings: 3
   TransformSpace: 0
+  EnablePredictionErrorCorrectionSmoothing: 0
+  InterpolationMultiplier: 20
+  CorrectionMultiplier: 3
+  CorrectionMaxBlendAlpha: 0.7
+  TeleportErrorThreshold: 50
   _interpolationSource: 0
 --- !u!1 &1219430059
 GameObject:
@@ -4917,6 +4935,11 @@ MonoBehaviour:
   PositionPrecision: 3
   Settings: 3
   TransformSpace: 0
+  EnablePredictionErrorCorrectionSmoothing: 0
+  InterpolationMultiplier: 20
+  CorrectionMultiplier: 3
+  CorrectionMaxBlendAlpha: 0.7
+  TeleportErrorThreshold: 50
   _interpolationSource: 0
 --- !u!114 &1694389362
 MonoBehaviour:
@@ -5457,6 +5480,11 @@ MonoBehaviour:
   PositionPrecision: 3
   Settings: 3
   TransformSpace: 0
+  EnablePredictionErrorCorrectionSmoothing: 0
+  InterpolationMultiplier: 20
+  CorrectionMultiplier: 3
+  CorrectionMaxBlendAlpha: 0.7
+  TeleportErrorThreshold: 50
   _interpolationSource: 0
 --- !u!114 &1985525611
 MonoBehaviour:

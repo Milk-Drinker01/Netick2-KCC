@@ -484,7 +484,7 @@ MonoBehaviour:
   RenderTransform: {fileID: 5650222378909378417}
   TeleportDistance: 50
   PositionPrecision: 3
-  Settings: 31
+  Settings: 5
   TransformSpace: 1
   EnablePredictionErrorCorrectionSmoothing: 0
   InterpolationMultiplier: 20

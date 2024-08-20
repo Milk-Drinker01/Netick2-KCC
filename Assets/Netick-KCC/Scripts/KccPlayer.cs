@@ -21,12 +21,13 @@ public class KccPlayer : NetickKccBase
     [SerializeField] private Transform CameraTransform;
     
     [Networked] [Smooth] public Vector2 YawPitch { get; set; }
-
-    private Interpolator rotationInterpolator;
+    
     [Networked] public NetworkBool Crouching { get; set; }
 
     private Locomotion _locomotion;
 
+    private Interpolator rotationInterpolator;
+    private Vector2 _camAngles;
     private bool _crouching;
 
 
@@ -56,10 +57,12 @@ public class KccPlayer : NetickKccBase
     public override void NetworkRender()
     {
         //RenderTransform.position = Position;
-        bool didGetData = rotationInterpolator.GetInterpolationData<Vector2>(InterpolationSource.Auto, out var rotationFrom, out var rotationTo, out float alpha);
-        RenderTransform.rotation = Quaternion.Euler(0, LerpRotation(rotationFrom.x, rotationTo.x, alpha), 0);
-        //RenderTransform.localRotation = Quaternion.Euler(0, YawPitch.x, 0);
-        CameraTransform.localRotation = Quaternion.Euler(YawPitch.y, 0, 0);
+        if (IsProxy)    //on local client, we apply the camera rotation in update. on proxies, we use network render
+        {
+            rotationInterpolator.GetInterpolationData<Vector2>(InterpolationSource.Auto, out var rotationFrom, out var rotationTo, out float alpha);
+            ApplyRotations(LerpRotation(rotationFrom.x, rotationTo.x, alpha), YawPitch.y);
+        }
+
         float height = Crouching ? _locomotion.CrouchedCapsuleHeight : _locomotion.CapsuleStandHeight;
         RenderTransform.localScale = new Vector3(1, height/2, 1);
     }
@@ -111,6 +114,10 @@ public class KccPlayer : NetickKccBase
         #endregion
 
         Sandbox.SetInput<KccDemoInput>(networkInput);
+
+        // we apply the rotation in update on the client to prevent look delay
+        _camAngles = ClampAngles(_camAngles.x + camInput.x, _camAngles.y + camInput.y);
+        ApplyRotations(_camAngles);
     }
 
     public override void NetworkFixedUpdate()
@@ -126,6 +133,11 @@ public class KccPlayer : NetickKccBase
 
             characterInputs.JumpDown = input.JumpDown;
 
+            //if (KCCState.FoundAnyGround)
+            //{
+            //    characterInputs.JumpDown = true;
+            //}
+
             if (!Crouching && input.CouchInput)
                 characterInputs.CrouchDown = true;
             if (Crouching && !input.CouchInput)
@@ -136,10 +148,24 @@ public class KccPlayer : NetickKccBase
             _locomotion.SetInputs(ref characterInputs);
         }
 
+        ApplyRotations(YawPitch);
+
         if (Sandbox.IsServer || IsPredicted)
         {
             Simulate();
         }
+    }
+
+    private void ApplyRotations(Vector2 camAngles)
+    {
+        ApplyRotations(camAngles.x, camAngles.y);
+        _camAngles = camAngles;
+    }
+
+    private void ApplyRotations(float yaw, float pitch)
+    {
+        RenderTransform.rotation = Quaternion.Euler(0, yaw, 0);
+        CameraTransform.localRotation = Quaternion.Euler(pitch, 0, 0);
     }
 
     private Vector2 ClampAngles(Vector2 _yawPitch)

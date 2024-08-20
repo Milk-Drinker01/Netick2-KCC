@@ -184,7 +184,7 @@ public class Locomotion : MonoBehaviour, ICharacterController
             if (AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)
             {
                 // If we're on a ground surface, reset jumping values
-                if (!_jumpedThisFrame)
+                //if (!_jumpedThisFrame)
                 {
                     _jumpConsumed = false;
                 }
@@ -297,7 +297,8 @@ public class Locomotion : MonoBehaviour, ICharacterController
                     if (_jumpRequested)
                     {
                         // See if we actually are allowed to jump
-                        if (!_jumpConsumed && ((AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)))
+                        // (!_jumpConsumed && ((AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)))
+                        if (((AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)))
                         {
                             // Calculate jump direction before ungrounding
                             Vector3 jumpDirection = Motor.CharacterUp;
