@@ -55,7 +55,6 @@ public class Locomotion : MonoBehaviour, ICharacterController
     private float _sprintMultiplier;
     private Vector3 _lookInputVector;
     private bool _jumpRequested = false;
-    private bool _jumpConsumed = false;
     private bool _jumpedThisFrame = false;
     public bool GetJumpedThisFrame() { return _jumpedThisFrame; }
     private Vector3 _internalVelocityAdd = Vector3.zero;
@@ -178,18 +177,7 @@ public class Locomotion : MonoBehaviour, ICharacterController
     /// </summary>
     public void BeforeCharacterUpdate(float deltaTime)
     {
-        // Handle jump-related values
-        {
 
-            if (AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)
-            {
-                // If we're on a ground surface, reset jumping values
-                //if (!_jumpedThisFrame)
-                {
-                    _jumpConsumed = false;
-                }
-            }
-        }
     }
 
     /// <summary>
@@ -297,7 +285,6 @@ public class Locomotion : MonoBehaviour, ICharacterController
                     if (_jumpRequested)
                     {
                         // See if we actually are allowed to jump
-                        // (!_jumpConsumed && ((AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)))
                         if (((AllowJumpingWhenSliding ? Motor.GroundingStatus.FoundAnyGround : Motor.GroundingStatus.IsStableOnGround)))
                         {
                             // Calculate jump direction before ungrounding
@@ -314,7 +301,6 @@ public class Locomotion : MonoBehaviour, ICharacterController
                             // Add to the return velocity and reset jump state
                             currentVelocity += (jumpDirection * JumpUpSpeed) - Vector3.Project(currentVelocity, Motor.CharacterUp);
                             currentVelocity += (_moveInputVector * JumpScalableForwardSpeed);
-                            _jumpConsumed = true;
                             _jumpedThisFrame = true;
                         }
                         _jumpRequested = false;
