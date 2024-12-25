@@ -57,11 +57,13 @@ public class KccPlayer : NetickKccBase
     public override void NetworkRender()
     {
         //RenderTransform.position = Position;
-        if (IsProxy)    //on local client, we apply the camera rotation in update. on proxies, we use network render
+        if (IsProxy)    //on local client, we apply the camera rotation using the values set in NetworkUpdate. on proxies, we use the interpolated values
         {
             rotationInterpolator.GetInterpolationData<Vector2>(InterpolationSource.Auto, out var rotationFrom, out var rotationTo, out float alpha);
             ApplyRotations(LerpRotation(rotationFrom.x, rotationTo.x, alpha), YawPitch.y);
         }
+        else
+            ApplyRotations(_camAngles);
 
         float height = Crouching ? _locomotion.CrouchedCapsuleHeight : _locomotion.CapsuleStandHeight;
         RenderTransform.localScale = new Vector3(1, height/2, 1);
@@ -115,9 +117,10 @@ public class KccPlayer : NetickKccBase
 
         Sandbox.SetInput<KccDemoInput>(networkInput);
 
-        // we apply the rotation in update on the client to prevent look delay
+        //on the local client, we set the rotation to be applied during NetworkRender during NetworkUpdate,
+        //rather than using the interpolated value, to prevent look delay
         _camAngles = ClampAngles(_camAngles.x + camInput.x, _camAngles.y + camInput.y);
-        ApplyRotations(_camAngles);
+        //ApplyRotations(_camAngles);
     }
 
     public override void NetworkFixedUpdate()
@@ -132,11 +135,6 @@ public class KccPlayer : NetickKccBase
             characterInputs.CameraRotation = Quaternion.Euler(0, YawPitch.x, 0);
 
             characterInputs.JumpDown = input.JumpDown;
-
-            //if (KCCState.FoundAnyGround)
-            //{
-            //    characterInputs.JumpDown = true;
-            //}
 
             if (!Crouching && input.CouchInput)
                 characterInputs.CrouchDown = true;

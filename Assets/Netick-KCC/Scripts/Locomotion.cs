@@ -137,7 +137,8 @@ public class Locomotion : MonoBehaviour, ICharacterController
                     // Move and look inputs
                     _moveInputVector = cameraPlanarRotation * moveInputVector;
 
-                    _lookInputVector = Vector3.forward;
+                    //_lookInputVector = Vector3.forward;
+                    _lookInputVector = cameraPlanarDirection;
 
                     // Jumping input
                     if (inputs.JumpDown)
@@ -193,6 +194,7 @@ public class Locomotion : MonoBehaviour, ICharacterController
                 {
                     currentRotation = Quaternion.LookRotation(_lookInputVector, Motor.CharacterUp);
 
+                    return;
                     Vector3 currentUp = (currentRotation * Vector3.up);
                     Vector3 smoothedGravityDir = Vector3.Slerp(currentUp, Vector3.up, 1 - Mathf.Exp(-10 * deltaTime));
                     currentRotation = Quaternion.FromToRotation(currentUp, smoothedGravityDir) * currentRotation;
