@@ -129,7 +129,7 @@ public class KccPlayer : NetickKccBase
                 MoveAxisRight = input.Movement.x,
                 Sprint = (input.Sprint && input.Movement.y > 0),
                 //ForwardVector = Quaternion.Euler(0, YawPitch.x, 0),
-                ForwardVector = Quaternion.Euler(0, transform.eulerAngles.y + input.YawPitchDelta.x, 0),
+                CameraRotation = Quaternion.Euler(0, transform.eulerAngles.y + input.YawPitchDelta.x, 0),
                 JumpDown = input.JumpDown,
             };
 
