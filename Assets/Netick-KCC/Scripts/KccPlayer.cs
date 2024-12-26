@@ -19,8 +19,7 @@ public class KccPlayer : NetickKccBase
 
     [SerializeField] private Transform RenderTransform;
     [SerializeField] private Transform CameraTransform;
-    
-    //[Networked] [Smooth] public Vector2 YawPitch { get; set; }
+
     [Networked] [Smooth] public float Pitch { get; set; }
     
     [Networked] public NetworkBool Crouching { get; set; }
@@ -59,17 +58,7 @@ public class KccPlayer : NetickKccBase
 
     public override void NetworkRender()
     {
-        //RenderTransform.position = Position;
-        //if (IsProxy)    //on local client, we apply the camera rotation using the values set in NetworkUpdate. on proxies, we use the interpolated values
-        //{
-        //    //rotationInterpolator.GetInterpolationData<Vector2>(InterpolationSource.Auto, out var rotationFrom, out var rotationTo, out float alpha);
-        //    rotationInterpolator.GetInterpolationData<Quaternion>(InterpolationSource.Auto, out var rotationFrom, out var rotationTo, out float alpha);
-        //    //GetComponent<NetworkTransform>().Rotation;
-        //    ApplyRotations(LerpRotation(rotationFrom.eulerAngles.y, rotationTo.eulerAngles.y, alpha), Pitch);
-        //    ApplyRotations(GetComponent<NetworkTransform>().Rotation.eulerAngles.y, Pitch);
-        //}
-
-        if (IsInputSource)
+        if (IsInputSource)  //on local client, we apply the camera rotation using the values set in NetworkUpdate. on proxies, we use the interpolated values
             ApplyRotations(_camAngles);
 
         float height = Crouching ? _locomotion.CrouchedCapsuleHeight : _locomotion.CapsuleStandHeight;
