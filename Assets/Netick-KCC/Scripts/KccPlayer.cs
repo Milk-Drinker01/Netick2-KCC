@@ -124,7 +124,6 @@ public class KccPlayer : NetickKccBase
         if (FetchInput(out KccDemoInput input))
         {
             Pitch = Mathf.Clamp(Pitch + input.YawPitchDelta.y, -90, 90);
-            //YawPitch = ClampAngles(YawPitch + input.YawPitch);
             LocomotionInputs characterInputs = new LocomotionInputs { 
                 MoveAxisForward  = input.Movement.y,
                 MoveAxisRight = input.Movement.x,
@@ -149,7 +148,7 @@ public class KccPlayer : NetickKccBase
             Simulate();
         }
 
-        //ApplyRotations(YawPitch);
+        ApplyRotations(new Vector2(transform.eulerAngles.y, Pitch));
     }
 
     private void ApplyRotations(Vector2 camAngles)
