@@ -365,7 +365,7 @@ MonoBehaviour:
   ToggleCrouch: 1
   RenderTransform: {fileID: 5650222378909378417}
   CameraTransform: {fileID: 6152984085407390542}
-  <YawPitch>k__BackingField: {x: 0, y: 0}
+  <Pitch>k__BackingField: 0
   <Crouching>k__BackingField:
     RawValue: 0
 --- !u!114 &5651286471523823300

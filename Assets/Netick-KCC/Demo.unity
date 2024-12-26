@@ -560,7 +560,6 @@ GameObject:
   - component: {fileID: 106340773}
   - component: {fileID: 106340772}
   - component: {fileID: 106340771}
-  - component: {fileID: 106340770}
   m_Layer: 0
   m_Name: NetworkPlatform (2)
   m_TagString: Untagged
@@ -568,29 +567,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &106340770
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 106340769}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 682374318, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RenderTransform: {fileID: 668687017}
-  TeleportDistance: 50
-  PositionPrecision: 3
-  Settings: 3
-  TransformSpace: 0
-  EnablePredictionErrorCorrectionSmoothing: 0
-  InterpolationMultiplier: 20
-  CorrectionMultiplier: 3
-  CorrectionMaxBlendAlpha: 0.7
-  TeleportErrorThreshold: 50
-  _interpolationSource: 0
 --- !u!114 &106340771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1401,7 +1377,6 @@ GameObject:
   - component: {fileID: 390926090}
   - component: {fileID: 390926089}
   - component: {fileID: 390926088}
-  - component: {fileID: 390926087}
   m_Layer: 0
   m_Name: NetworkPlatform (1)
   m_TagString: Untagged
@@ -1409,29 +1384,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &390926087
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 390926086}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 682374318, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RenderTransform: {fileID: 1162035166}
-  TeleportDistance: 50
-  PositionPrecision: 3
-  Settings: 3
-  TransformSpace: 0
-  EnablePredictionErrorCorrectionSmoothing: 0
-  InterpolationMultiplier: 20
-  CorrectionMultiplier: 3
-  CorrectionMaxBlendAlpha: 0.7
-  TeleportErrorThreshold: 50
-  _interpolationSource: 0
 --- !u!114 &390926088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2736,6 +2688,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6475ef2cc420914e87d5433265300cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Offset: {x: 27, y: 20}
+  MediumLatencyThreshold: 150
+  HighLatencyThreshold: 250
+  MediumPacketLossThreshold: 1
+  HighPacketLossThreshold: 10
+  PacketLossIconOffset: {x: -80, y: 30}
+  LatencyIconOffset: {x: -80, y: 70}
+  ServerLagIconOffset: {x: -80, y: 110}
+  IconSize: 30
 --- !u!114 &847424781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2755,10 +2716,13 @@ MonoBehaviour:
   StartServerInMultiplePeersMode: 1
   AutoStart: 0
   AutoConnect: 0
-  ShowDisconnectButton: 1
-  ShowConnectButton: 1
   Port: 36339
   ServerIPAddress: 127.0.0.1
+  Cap: 1
+  FPS: 450
+  ShowDisconnectButton: 1
+  ShowConnectButton: 1
+  Offset: {x: 36, y: 0}
 --- !u!4 &847424782
 Transform:
   m_ObjectHideFlags: 0
@@ -3498,7 +3462,6 @@ GameObject:
   - component: {fileID: 1175825669}
   - component: {fileID: 1175825660}
   - component: {fileID: 1175825661}
-  - component: {fileID: 1175825670}
   m_Layer: 0
   m_Name: NetworkPlatform
   m_TagString: Untagged
@@ -3615,29 +3578,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1175825670
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1175825659}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 682374318, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RenderTransform: {fileID: 2139995613}
-  TeleportDistance: 50
-  PositionPrecision: 3
-  Settings: 3
-  TransformSpace: 0
-  EnablePredictionErrorCorrectionSmoothing: 0
-  InterpolationMultiplier: 20
-  CorrectionMultiplier: 3
-  CorrectionMaxBlendAlpha: 0.7
-  TeleportErrorThreshold: 50
-  _interpolationSource: 0
 --- !u!1 &1219430059
 GameObject:
   m_ObjectHideFlags: 0
@@ -4910,7 +4850,6 @@ GameObject:
   - component: {fileID: 1694389364}
   - component: {fileID: 1694389363}
   - component: {fileID: 1694389362}
-  - component: {fileID: 1694389361}
   m_Layer: 0
   m_Name: NetworkPlatform (3)
   m_TagString: Untagged
@@ -4918,29 +4857,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1694389361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1694389360}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 682374318, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RenderTransform: {fileID: 1172652674}
-  TeleportDistance: 50
-  PositionPrecision: 3
-  Settings: 3
-  TransformSpace: 0
-  EnablePredictionErrorCorrectionSmoothing: 0
-  InterpolationMultiplier: 20
-  CorrectionMultiplier: 3
-  CorrectionMaxBlendAlpha: 0.7
-  TeleportErrorThreshold: 50
-  _interpolationSource: 0
 --- !u!114 &1694389362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5455,7 +5371,6 @@ GameObject:
   - component: {fileID: 1985525613}
   - component: {fileID: 1985525612}
   - component: {fileID: 1985525611}
-  - component: {fileID: 1985525610}
   m_Layer: 0
   m_Name: NetworkPlatform (4)
   m_TagString: Untagged
@@ -5463,29 +5378,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1985525610
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1985525609}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 682374318, guid: da78c2c9df60edc4fb5f65b59fa57c41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  RenderTransform: {fileID: 366933799}
-  TeleportDistance: 50
-  PositionPrecision: 3
-  Settings: 3
-  TransformSpace: 0
-  EnablePredictionErrorCorrectionSmoothing: 0
-  InterpolationMultiplier: 20
-  CorrectionMultiplier: 3
-  CorrectionMaxBlendAlpha: 0.7
-  TeleportErrorThreshold: 50
-  _interpolationSource: 0
 --- !u!114 &1985525611
 MonoBehaviour:
   m_ObjectHideFlags: 0

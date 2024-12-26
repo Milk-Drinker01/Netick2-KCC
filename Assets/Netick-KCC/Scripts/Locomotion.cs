@@ -13,8 +13,8 @@ public struct LocomotionInputs
 {
     public float MoveAxisForward;
     public float MoveAxisRight;
-    public bool sprint;
-    public Quaternion CameraRotation;
+    public bool Sprint;
+    public Quaternion ForwardVector;
     public bool JumpDown;
     public bool CrouchDown;
     public bool CrouchUp;
@@ -123,10 +123,10 @@ public class Locomotion : MonoBehaviour, ICharacterController
         Vector3 moveInputVector = Vector3.ClampMagnitude(new Vector3(inputs.MoveAxisRight, 0f, inputs.MoveAxisForward), 1f);
 
         // Calculate camera direction and rotation on the character plane
-        Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.CameraRotation * Vector3.forward, Motor.CharacterUp).normalized;
+        Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.ForwardVector * Vector3.forward, Motor.CharacterUp).normalized;
         if (cameraPlanarDirection.sqrMagnitude == 0f)
         {
-            cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.CameraRotation * Vector3.up, Motor.CharacterUp).normalized;
+            cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.ForwardVector * Vector3.up, Motor.CharacterUp).normalized;
         }
         Quaternion cameraPlanarRotation = Quaternion.LookRotation(cameraPlanarDirection, Motor.CharacterUp);
 
@@ -138,7 +138,7 @@ public class Locomotion : MonoBehaviour, ICharacterController
                     _moveInputVector = cameraPlanarRotation * moveInputVector;
 
                     //_lookInputVector = Vector3.forward;
-                    _lookInputVector = cameraPlanarDirection;
+                    _lookInputVector = cameraPlanarDirection;   
 
                     // Jumping input
                     if (inputs.JumpDown)
@@ -162,7 +162,7 @@ public class Locomotion : MonoBehaviour, ICharacterController
                         _shouldBeCrouching = false;
                     }
 
-                    _sprintMultiplier = inputs.sprint ? (_isCrouching ? 1 : SprintMultiplier) : 1;
+                    _sprintMultiplier = inputs.Sprint ? (_isCrouching ? 1 : SprintMultiplier) : 1;
                    
 
                     break;
