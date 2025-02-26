@@ -124,10 +124,11 @@ public class KccPlayer : NetickKccBase
         if (FetchInput(out KccDemoInput input))
         {
             Pitch = Mathf.Clamp(Pitch + input.YawPitchDelta.y, -90, 90);
+            Vector2 movementVector = Vector2.ClampMagnitude(input.Movement, 1);
             LocomotionInputs characterInputs = new LocomotionInputs { 
-                MoveAxisForward  = input.Movement.y,
-                MoveAxisRight = input.Movement.x,
-                Sprint = (input.Sprint && input.Movement.y > 0),
+                MoveAxisForward  = movementVector.y,
+                MoveAxisRight = movementVector.x,
+                Sprint = (input.Sprint && movementVector.y > 0),
                 //ForwardVector = Quaternion.Euler(0, YawPitch.x, 0),
                 CameraRotation = Quaternion.Euler(0, transform.eulerAngles.y + input.YawPitchDelta.x, 0),
                 JumpDown = input.JumpDown,
