@@ -21,6 +21,7 @@ public class NetickKccSimulator : NetickBehaviour
         int physicsMoversCount = movers.Count;
 
 #pragma warning disable 0162
+        Physics.SyncTransforms();
         // Update PhysicsMover velocities
         for (int i = 0; i < physicsMoversCount; i++)
         {
@@ -42,7 +43,7 @@ public class NetickKccSimulator : NetickBehaviour
             mover.Rigidbody.position = mover.TransientPosition;
             mover.Rigidbody.rotation = mover.TransientRotation;
         }
-        Physics.SyncTransforms();
+        //Physics.SyncTransforms();
 
         // Character controller update phase 2 and move
         for (int i = 0; i < characterMotorsCount; i++)

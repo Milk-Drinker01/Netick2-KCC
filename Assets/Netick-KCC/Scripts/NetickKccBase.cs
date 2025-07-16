@@ -3,6 +3,7 @@ using Netick;
 using Netick.Unity;
 using KinematicCharacterController;
 using Unity.VisualScripting;
+using System.Net.NetworkInformation;
 
 [Networked]
 public struct KCCNetworkState
@@ -17,6 +18,10 @@ public struct KCCNetworkState
     [Networked] public Vector3 GroundNormal { get; set; }
     [Networked] public Vector3 InnerGroundNormal { get; set; }
     [Networked] public Vector3 OuterGroundNormal { get; set; }
+
+    //comment these out if u dont need physics movers to work
+    [Networked] public Vector3 AttachedRigidbodyVelocity { get; set; }
+    public int AttachedRigidbodyNetworkID;  //this is to make moving platforms work.
 }
 
 [ExecuteBefore(typeof(NetickKccSimulator))]
@@ -81,6 +86,13 @@ public class NetickKccBase : NetworkBehaviour
             OuterGroundNormal = kccNetState.OuterGroundNormal
         };
 
+        kccState.AttachedRigidbodyVelocity = kccNetState.AttachedRigidbodyVelocity;
+        if (kccNetState.AttachedRigidbodyNetworkID != 0)
+        {
+            if (Sandbox.TryGetObject(kccNetState.AttachedRigidbodyNetworkID, out NetworkObject obj));
+                obj.TryGetComponent<Rigidbody>(out kccState.AttachedRigidbody);
+        }
+
         return kccState;
     }
 
@@ -108,6 +120,11 @@ public class NetickKccBase : NetworkBehaviour
         kccNetState.GroundNormal = state.GroundingStatus.GroundNormal;
         kccNetState.InnerGroundNormal = state.GroundingStatus.InnerGroundNormal;
         kccNetState.OuterGroundNormal = state.GroundingStatus.OuterGroundNormal;
+
+        kccNetState.AttachedRigidbodyVelocity = state.AttachedRigidbodyVelocity;
+        kccNetState.AttachedRigidbodyNetworkID = 0;
+        if (state.AttachedRigidbody && state.AttachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject obj))
+            kccNetState.AttachedRigidbodyNetworkID = obj.Id;
 
         return kccNetState;
     }
