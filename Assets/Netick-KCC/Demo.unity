@@ -2661,7 +2661,6 @@ GameObject:
   - component: {fileID: 847424781}
   - component: {fileID: 847424779}
   - component: {fileID: 847424783}
-  - component: {fileID: 847424784}
   m_Layer: 0
   m_Name: Network
   m_TagString: Untagged
@@ -2703,7 +2702,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SandboxPrefab: {fileID: 0}
-  Transport: {fileID: 11400000, guid: 92ae3c204f53e4d43acddbc56be154bf, type: 2}
+  Transport: {fileID: 11400000, guid: 45d8249dfdf511d429f92c6a4a4e26f4, type: 2}
   Mode: 2
   Clients: 1
   StartServerInMultiplePeersMode: 1
@@ -2748,22 +2747,6 @@ MonoBehaviour:
   HorizontalOffset: 1
   StaggerSpawns: 1
   DestroyPlayerObjectWhenLeaving: 1
---- !u!114 &847424784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 847424778}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea15756e0ae567a4a96a67213c34f8c3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ServerOnly: 0
-  SimulateLatency: 1
-  SimulationLatencyMs: 75
-  SimulationLatencyRange: 3
 --- !u!1 &880133142
 GameObject:
   m_ObjectHideFlags: 0
