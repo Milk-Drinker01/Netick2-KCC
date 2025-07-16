@@ -3,18 +3,19 @@ using Netick;
 using Netick.Unity;
 using KinematicCharacterController;
 
+[Networked]
 public struct KCCNetworkState
 {
     public NetworkBool MustUnground;
-    public float MustUngroundTime;
+    [Networked] public float MustUngroundTime { get; set; }
     public NetworkBool LastMovementIterationFoundAnyGround;
 
     public NetworkBool FoundAnyGround;
     public NetworkBool IsStableOnGround;
     public NetworkBool SnappingPrevented;
-    public Vector3 GroundNormal;
-    public Vector3 InnerGroundNormal;
-    public Vector3 OuterGroundNormal;
+    [Networked] public Vector3 GroundNormal { get; set; }
+    [Networked] public Vector3 InnerGroundNormal { get; set; }
+    [Networked] public Vector3 OuterGroundNormal { get; set; }
 }
 
 public class NetickKccBase : NetworkBehaviour

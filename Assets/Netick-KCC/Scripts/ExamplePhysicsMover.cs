@@ -8,7 +8,29 @@ using KinematicCharacterController;
 [ExecuteBefore(typeof(KccPlayer))]
 public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
 {
-    [Networked] [Smooth(false)] public PhysicsMoverState NetworkState { get; set; }
+    [Networked]
+    public struct PhysicsMoverNetworkedState
+    {
+        [Networked] public Vector3 Position { get; set; }
+        [Networked] public Quaternion Rotation { get; set; }
+        [Networked] public Vector3 Velocity { get; set; }
+        [Networked] public Vector3 AngularVelocity { get; set; }
+
+        public PhysicsMoverNetworkedState(PhysicsMoverState physicsMoverState)
+        {
+            Position = physicsMoverState.Position;
+            Rotation = physicsMoverState.Rotation;
+            Velocity = physicsMoverState.Velocity;
+            AngularVelocity = physicsMoverState.AngularVelocity;
+        }
+
+        public PhysicsMoverState GetPhysicsMoverState()
+        {
+            return new PhysicsMoverState() { Position = Position, Rotation = Rotation, Velocity = Velocity, AngularVelocity = AngularVelocity };
+        }
+    }
+
+    [Networked] [Smooth(false)] public PhysicsMoverNetworkedState NetworkState { get; set; }
     [Networked] public float Time { get; set; }
 
     public Vector3 TranslationAxis = Vector3.right;
@@ -40,7 +62,7 @@ public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
 
     public override void NetworkRender()
     {
-        transformInterpolator.GetInterpolationData<PhysicsMoverState>(InterpolationSource.Auto, out var transformFrom, out var transformTo, out float alpha);
+        transformInterpolator.GetInterpolationData<PhysicsMoverNetworkedState>(InterpolationSource.Auto, out var transformFrom, out var transformTo, out float alpha);
         //Debug.Log(transformFrom.Position);
         //Debug.Log(transformTo.Position);
         //return;
@@ -49,7 +71,7 @@ public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
     }
     public override void NetcodeIntoGameEngine()
     {
-        Mover.ApplyState(NetworkState);
+        Mover.ApplyState(NetworkState.GetPhysicsMoverState());
     }
 
     public override void NetworkFixedUpdate()
@@ -62,17 +84,13 @@ public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
         Mover.Transform.SetPositionAndRotation(Mover.TransientPosition, Mover.TransientRotation);
         rb.position = Mover.TransientPosition;
         rb.rotation = Mover.TransientRotation;
-
-        Physics.SyncTransforms();
-        //if (Sandbox.IsServer)
-            NetworkState = Mover.GetState();
     }
 
-    //public override void GameEngineIntoNetcode()
-    //{
-    //    //if (Sandbox.IsServer)
-    //        NetworkState = Mover.GetState();
-    //}
+    public override void GameEngineIntoNetcode()
+    {
+        Physics.SyncTransforms();
+        NetworkState = new PhysicsMoverNetworkedState(Mover.GetState());
+    }
 
     public void UpdateMovement(out Vector3 goalPosition, out Quaternion goalRotation, float deltaTime)
     {
