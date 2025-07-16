@@ -5,7 +5,7 @@ using Netick;
 using Netick.Unity;
 using KinematicCharacterController;
 
-[ExecuteBefore(typeof(KccPlayer))]
+[ExecuteBefore(typeof(NetickKccSimulator))]
 public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
 {
     [Networked]
@@ -58,6 +58,16 @@ public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
     public override void NetworkStart()
     {
         transformInterpolator = FindInterpolator(nameof(NetworkState));
+        NetickKccSimulator simulator = NetickKccSimulator.GetSimulator(Sandbox);
+        if (IsPredicted || Sandbox.IsServer)
+            simulator.PhysicsMovers.Add(Mover);
+    }
+
+    public override void NetworkDestroy()
+    {
+        NetickKccSimulator simulator = NetickKccSimulator.GetSimulator(Sandbox);
+        if (IsPredicted || Sandbox.IsServer)
+            simulator.PhysicsMovers.Remove(Mover);
     }
 
     public override void NetworkRender()
@@ -74,21 +84,22 @@ public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
         Mover.ApplyState(NetworkState.GetPhysicsMoverState());
     }
 
-    public override void NetworkFixedUpdate()
-    {
-        if (Sandbox == null)
-            return;
+    //public override void NetworkFixedUpdate()
+    //{
+    //    if (Sandbox == null)
+    //        return;
 
-        Mover.VelocityUpdate(Sandbox.ScaledFixedDeltaTime);
+    //    Mover.VelocityUpdate(Sandbox.ScaledFixedDeltaTime);
 
-        Mover.Transform.SetPositionAndRotation(Mover.TransientPosition, Mover.TransientRotation);
-        rb.position = Mover.TransientPosition;
-        rb.rotation = Mover.TransientRotation;
-    }
+    //    Mover.Transform.SetPositionAndRotation(Mover.TransientPosition, Mover.TransientRotation);
+    //    rb.position = Mover.TransientPosition;
+    //    rb.rotation = Mover.TransientRotation;
+    //    Physics.SyncTransforms();
+    //}
 
     public override void GameEngineIntoNetcode()
     {
-        Physics.SyncTransforms();
+        //Physics.SyncTransforms();
         NetworkState = new PhysicsMoverNetworkedState(Mover.GetState());
     }
 

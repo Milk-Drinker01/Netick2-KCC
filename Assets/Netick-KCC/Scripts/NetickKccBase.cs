@@ -2,6 +2,7 @@ using UnityEngine;
 using Netick;
 using Netick.Unity;
 using KinematicCharacterController;
+using Unity.VisualScripting;
 
 [Networked]
 public struct KCCNetworkState
@@ -18,14 +19,15 @@ public struct KCCNetworkState
     [Networked] public Vector3 OuterGroundNormal { get; set; }
 }
 
+[ExecuteBefore(typeof(NetickKccSimulator))]
 public class NetickKccBase : NetworkBehaviour
 {
     [Networked(relevancy: Relevancy.InputSource)] public KCCNetworkState KCCState { get; set; }
-    [Networked] [Smooth] public Vector3 Velocity { get; set; }
+    [Networked][Smooth] public Vector3 Velocity { get; set; }
 
     protected KinematicCharacterMotorNetick _motor;
 
-    protected void Initialize()
+    protected void Initialize()    //call this on NetworkStart or NetworkAwake
     {
         TryGetComponent<KinematicCharacterMotorNetick>(out _motor);
 
@@ -33,6 +35,17 @@ public class NetickKccBase : NetworkBehaviour
         KinematicCharacterSystem.EnsureCreation();
         KinematicCharacterSystem.Settings.AutoSimulation = false;
         KinematicCharacterSystem.Settings.Interpolate = false;
+
+        NetickKccSimulator simulator = NetickKccSimulator.GetSimulator(Sandbox);
+        if (IsPredicted || Sandbox.IsServer)
+            simulator.CharacterMotors.Add(this);
+    }
+
+    protected void Cleanup()    //call this on NetworkDestroy
+    {
+        NetickKccSimulator simulator = NetickKccSimulator.GetSimulator(Sandbox);
+        if (IsPredicted || Sandbox.IsServer)
+            simulator.CharacterMotors.Remove(this);
     }
 
     protected void SetPhysicsScene()
@@ -101,10 +114,26 @@ public class NetickKccBase : NetworkBehaviour
 
     protected void Simulate()
     {
-        _motor.UpdatePhase1(Sandbox.FixedDeltaTime);
-        _motor.UpdatePhase2(Sandbox.FixedDeltaTime);
-        _motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
+        //_motor.UpdatePhase1(Sandbox.FixedDeltaTime);
+        //_motor.UpdatePhase2(Sandbox.FixedDeltaTime);
+        //_motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
 
+        //Velocity = _motor.BaseVelocity;
+    }
+
+    public void UpdatePhase1(float deltaTime)
+    {
+        _motor.UpdatePhase1(deltaTime);
+    }
+
+    public void UpdatePhase2(float deltaTime)
+    {
+        _motor.UpdatePhase2(deltaTime);
+        _motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
+    }
+
+    public virtual void PostSimulate()
+    {
         Velocity = _motor.BaseVelocity;
     }
 }

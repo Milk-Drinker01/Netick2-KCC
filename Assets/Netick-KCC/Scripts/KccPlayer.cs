@@ -26,22 +26,22 @@ public class KccPlayer : NetickKccBase
 
     private Locomotion _locomotion;
 
-    private Interpolator rotationInterpolator;
     private Vector2 _camAngles;
     private bool _crouching;
 
 
     private void Awake()
     {
-        Initialize();
         TryGetComponent<Locomotion>(out _locomotion);
+    }
+
+    public override void NetworkAwake()
+    {
+        Initialize();
     }
 
     public override void NetworkStart()
     {
-        //rotationInterpolator = FindInterpolator(nameof(YawPitch));
-        TryGetComponent<NetworkTransform>(out NetworkTransform netTransform);
-        rotationInterpolator = netTransform.FindInterpolator(nameof(netTransform.Rotation));
         SetPhysicsScene();
 
         if (!IsInputSource)
@@ -54,6 +54,11 @@ public class KccPlayer : NetickKccBase
     {
         OnPlayerDestroyed?.Invoke();
         Sandbox.Destroy(Object);
+    }
+
+    public override void NetworkDestroy()
+    {
+        Cleanup();
     }
 
     public override void NetworkRender()
@@ -143,12 +148,11 @@ public class KccPlayer : NetickKccBase
 
             _locomotion.SetInputs(ref characterInputs);
         }
+    }
 
-        if (Sandbox.IsServer || IsPredicted)
-        {
-            Simulate();
-        }
-
+    public override void PostSimulate()
+    {
+        base.PostSimulate();
         ApplyRotations(new Vector2(transform.eulerAngles.y, Pitch));
     }
 
