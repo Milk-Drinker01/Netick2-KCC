@@ -9,6 +9,7 @@ public class NetickKccSimulator : NetickBehaviour
 {
     public List<NetickKccBase> CharacterMotors = new List<NetickKccBase>();
     public List<PhysicsMover> PhysicsMovers = new List<PhysicsMover>();
+
     public override void NetworkFixedUpdate()
     {
         Simulate(Sandbox.ScaledFixedDeltaTime, CharacterMotors, PhysicsMovers);

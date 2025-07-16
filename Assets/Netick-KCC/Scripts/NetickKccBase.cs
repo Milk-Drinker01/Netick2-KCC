@@ -37,14 +37,14 @@ public class NetickKccBase : NetworkBehaviour
         KinematicCharacterSystem.Settings.Interpolate = false;
 
         NetickKccSimulator simulator = NetickKccSimulator.GetSimulator(Sandbox);
-        if (IsPredicted || Sandbox.IsServer)
+        if (Object.PredictionMode == Relevancy.Everyone || IsInputSource || Sandbox.IsServer)
             simulator.CharacterMotors.Add(this);
     }
 
     protected void Cleanup()    //call this on NetworkDestroy
     {
         NetickKccSimulator simulator = NetickKccSimulator.GetSimulator(Sandbox);
-        if (IsPredicted || Sandbox.IsServer)
+        if (Object.PredictionMode == Relevancy.Everyone || IsInputSource || Sandbox.IsServer)
             simulator.CharacterMotors.Remove(this);
     }
 
@@ -56,7 +56,7 @@ public class NetickKccBase : NetworkBehaviour
     //rollback client state
     public override void NetcodeIntoGameEngine()
     {
-        _motor.ApplyState(NetickStateToKCCState(KCCState));
+        _motor?.ApplyState(NetickStateToKCCState(KCCState));
     }
 
     private KinematicCharacterMotorState NetickStateToKCCState(KCCNetworkState kccNetState)
@@ -112,14 +112,6 @@ public class NetickKccBase : NetworkBehaviour
         return kccNetState;
     }
 
-    protected void Simulate()
-    {
-        //_motor.UpdatePhase1(Sandbox.FixedDeltaTime);
-        //_motor.UpdatePhase2(Sandbox.FixedDeltaTime);
-        //_motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
-
-        //Velocity = _motor.BaseVelocity;
-    }
 
     public void UpdatePhase1(float deltaTime)
     {

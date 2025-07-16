@@ -37,11 +37,12 @@ public class KccPlayer : NetickKccBase
 
     public override void NetworkAwake()
     {
-        Initialize();
+        //Initialize();
     }
 
     public override void NetworkStart()
     {
+        Initialize();
         SetPhysicsScene();
 
         if (!IsInputSource)
