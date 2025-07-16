@@ -5,7 +5,7 @@ using Netick;
 using Netick.Unity;
 using KinematicCharacterController;
 
-[ExecuteBefore(typeof(NetickKccSimulator))]
+[ExecuteBefore(typeof(NetickKccBase))]
 public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
 {
     [Networked]
@@ -78,24 +78,14 @@ public class ExamplePhysicsMover : NetworkBehaviour, IMoverController
         //return;
         transform.GetChild(0).position = Vector3.Lerp(transformFrom.Position, transformTo.Position, alpha);
         transform.GetChild(0).rotation = Quaternion.Lerp(transformFrom.Rotation, transformTo.Rotation, alpha);
+        //Mover.RotationDeltaFromInterpolation = Quaternion.Inverse(Mover.LatestInterpolationRotation) * transform.GetChild(0).localRotation;
+        Mover.LatestInterpolationRotation = transform.GetChild(0).localRotation;
     }
+
     public override void NetcodeIntoGameEngine()
     {
         Mover.ApplyState(NetworkState.GetPhysicsMoverState());
     }
-
-    //public override void NetworkFixedUpdate()
-    //{
-    //    if (Sandbox == null)
-    //        return;
-
-    //    Mover.VelocityUpdate(Sandbox.ScaledFixedDeltaTime);
-
-    //    Mover.Transform.SetPositionAndRotation(Mover.TransientPosition, Mover.TransientRotation);
-    //    rb.position = Mover.TransientPosition;
-    //    rb.rotation = Mover.TransientRotation;
-    //    Physics.SyncTransforms();
-    //}
 
     public override void GameEngineIntoNetcode()
     {

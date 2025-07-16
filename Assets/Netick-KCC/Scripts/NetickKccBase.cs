@@ -2,8 +2,6 @@ using UnityEngine;
 using Netick;
 using Netick.Unity;
 using KinematicCharacterController;
-using Unity.VisualScripting;
-using System.Net.NetworkInformation;
 
 [Networked]
 public struct KCCNetworkState
@@ -31,6 +29,7 @@ public class NetickKccBase : NetworkBehaviour
     [Networked][Smooth] public Vector3 BaseVelocity { get; set; }
 
     public bool EnableMovingPlatforms = true;
+    public bool RotateWithPhysicsMover = true;
 
     protected KinematicCharacterMotorNetick _motor;
 
@@ -140,7 +139,14 @@ public class NetickKccBase : NetworkBehaviour
 
     public void UpdatePhase1(float deltaTime)
     {
+        
         _motor.UpdatePhase1(deltaTime);
+        if (RotateWithPhysicsMover && _motor.AttachedRigidbody != null)
+        {
+            PhysicsMover mover = _motor.AttachedRigidbody.GetComponent<PhysicsMover>();
+            //Debug.Log((mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)).eulerAngles.y);
+            _motor.SetRotation(_motor.transform.rotation * (mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)));
+        }
     }
 
     public void UpdatePhase2(float deltaTime)

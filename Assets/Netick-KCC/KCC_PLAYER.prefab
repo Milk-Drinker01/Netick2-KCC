@@ -360,7 +360,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 523b771177d9557418d528bcf21ba0bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Velocity>k__BackingField: {x: 0, y: 0, z: 0}
+  <BaseVelocity>k__BackingField: {x: 0, y: 0, z: 0}
+  EnableMovingPlatforms: 1
+  RotateWithPhysicsMover: 1
   _sensitivityX: 1
   _sensitivityY: 1
   ToggleCrouch: 1

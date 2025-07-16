@@ -1,6 +1,7 @@
 using UnityEngine;
 using Netick;
 using Netick.Unity;
+using KinematicCharacterController;
 
 public struct KccDemoInput : INetworkInput
 {
@@ -65,7 +66,16 @@ public class KccPlayer : NetickKccBase
     public override void NetworkRender()
     {
         if (IsInputSource)  //on local client, we apply the camera rotation using the values set in NetworkUpdate. on proxies, we use the interpolated values
+        {
             ApplyRotations(_camAngles);
+            if (RotateWithPhysicsMover && _motor.AttachedRigidbody != null) //apply moving platform rotation interpolation
+            {
+                PhysicsMover mover = _motor.AttachedRigidbody.GetComponent<PhysicsMover>();
+                RenderTransform.rotation *= mover.LatestInterpolationRotation;
+                //Quaternion newRot = (RenderTransform.rotation * mover.LatestInterpolationRotation) * Quaternion.Inverse(RenderTransform.rotation);
+                //Debug.Log(newRot.eulerAngles.y);
+            }
+        }
 
         float height = Crouching ? _locomotion.CrouchedCapsuleHeight : _locomotion.CapsuleStandHeight;
         RenderTransform.localScale = new Vector3(1, height/2, 1);
@@ -136,7 +146,7 @@ public class KccPlayer : NetickKccBase
                 MoveAxisRight = movementVector.x,
                 Sprint = (input.Sprint && movementVector.y > 0),
                 //ForwardVector = Quaternion.Euler(0, YawPitch.x, 0),
-                CameraRotation = Quaternion.Euler(0, transform.eulerAngles.y + input.YawPitchDelta.x, 0),
+                DeltaCameraRotation = Quaternion.Euler(0, input.YawPitchDelta.x, 0),
                 JumpDown = input.JumpDown,
             };
 
