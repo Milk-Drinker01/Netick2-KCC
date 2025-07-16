@@ -93,8 +93,8 @@ public class NetickKccBase : NetworkBehaviour
         {
             if (kccNetState.AttachedRigidbodyNetworkID != 0)
             {
-                if (Sandbox.TryGetObject(kccNetState.AttachedRigidbodyNetworkID, out NetworkObject obj)) ;
-                obj.TryGetComponent<Rigidbody>(out kccState.AttachedRigidbody);
+                if (Sandbox.TryGetObject(kccNetState.AttachedRigidbodyNetworkID, out NetworkObject obj))
+                    obj.TryGetComponent<Rigidbody>(out kccState.AttachedRigidbody);
             }
         }
 
