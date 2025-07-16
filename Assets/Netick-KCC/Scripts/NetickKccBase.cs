@@ -28,7 +28,9 @@ public struct KCCNetworkState
 public class NetickKccBase : NetworkBehaviour
 {
     [Networked(relevancy: Relevancy.InputSource)] public KCCNetworkState KCCState { get; set; }
-    [Networked][Smooth] public Vector3 Velocity { get; set; }
+    [Networked][Smooth] public Vector3 BaseVelocity { get; set; }
+
+    public bool EnableMovingPlatforms = true;
 
     protected KinematicCharacterMotorNetick _motor;
 
@@ -70,7 +72,7 @@ public class NetickKccBase : NetworkBehaviour
 
         kccState.Position = transform.position;
         kccState.Rotation = transform.rotation;
-        kccState.BaseVelocity = Velocity;
+        kccState.BaseVelocity = BaseVelocity;
 
         kccState.MustUnground = kccNetState.MustUnground;
         kccState.MustUngroundTime = kccNetState.MustUngroundTime;
@@ -87,10 +89,13 @@ public class NetickKccBase : NetworkBehaviour
         };
 
         kccState.AttachedRigidbodyVelocity = kccNetState.AttachedRigidbodyVelocity;
-        if (kccNetState.AttachedRigidbodyNetworkID != 0)
+        if (EnableMovingPlatforms)
         {
-            if (Sandbox.TryGetObject(kccNetState.AttachedRigidbodyNetworkID, out NetworkObject obj));
+            if (kccNetState.AttachedRigidbodyNetworkID != 0)
+            {
+                if (Sandbox.TryGetObject(kccNetState.AttachedRigidbodyNetworkID, out NetworkObject obj)) ;
                 obj.TryGetComponent<Rigidbody>(out kccState.AttachedRigidbody);
+            }
         }
 
         return kccState;
@@ -108,7 +113,7 @@ public class NetickKccBase : NetworkBehaviour
 
         transform.position = state.Position;
         transform.rotation = state.Rotation;
-        Velocity = state.BaseVelocity;
+        BaseVelocity = state.BaseVelocity;
 
         kccNetState.MustUnground = state.MustUnground;
         kccNetState.MustUngroundTime = state.MustUngroundTime;
@@ -122,9 +127,12 @@ public class NetickKccBase : NetworkBehaviour
         kccNetState.OuterGroundNormal = state.GroundingStatus.OuterGroundNormal;
 
         kccNetState.AttachedRigidbodyVelocity = state.AttachedRigidbodyVelocity;
-        kccNetState.AttachedRigidbodyNetworkID = 0;
-        if (state.AttachedRigidbody && state.AttachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject obj))
-            kccNetState.AttachedRigidbodyNetworkID = obj.Id;
+        if (EnableMovingPlatforms)
+        {
+            kccNetState.AttachedRigidbodyNetworkID = 0;
+            if (state.AttachedRigidbody && state.AttachedRigidbody.TryGetComponent<NetworkObject>(out NetworkObject obj))
+                kccNetState.AttachedRigidbodyNetworkID = obj.Id;
+        }
 
         return kccNetState;
     }
@@ -143,6 +151,6 @@ public class NetickKccBase : NetworkBehaviour
 
     public virtual void PostSimulate()
     {
-        Velocity = _motor.BaseVelocity;
+        BaseVelocity = _motor.BaseVelocity;
     }
 }
