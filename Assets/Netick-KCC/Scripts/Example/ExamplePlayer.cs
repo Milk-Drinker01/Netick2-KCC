@@ -12,8 +12,11 @@ public struct KccDemoInput : INetworkInput
     public bool JumpDown;
 }
 
-public class KccPlayer : NetickKccBase
+[RequireComponent(typeof(NetickKCC))]
+[ExecuteBefore(typeof(NetickKCC))]
+public class ExamplePlayer : NetworkBehaviour, IKccPlayerCore
 {
+    [SerializeField] private NetickKCC KCC;
     [SerializeField] private float _sensitivityX = 1f;
     [SerializeField] private float _sensitivityY = 1f;
     [SerializeField] private bool ToggleCrouch = false;
@@ -21,8 +24,8 @@ public class KccPlayer : NetickKccBase
     [SerializeField] private Transform RenderTransform;
     [SerializeField] private Transform CameraTransform;
 
-    [Networked] [Smooth] public float Pitch { get; set; }
-    
+    [Networked][Smooth] public float Pitch { get; set; }
+
     [Networked] public NetworkBool Crouching { get; set; }
 
     private Locomotion _locomotion;
@@ -30,37 +33,20 @@ public class KccPlayer : NetickKccBase
     private Vector2 _camAngles;
     private bool _crouching;
 
-
     private void Awake()
     {
         TryGetComponent<Locomotion>(out _locomotion);
     }
 
-    public override void NetworkAwake()
-    {
-        //Initialize();
-    }
-
     public override void NetworkStart()
     {
-        Initialize();
-        SetPhysicsScene();
-
         if (!IsInputSource)
             GetComponentInChildren<Camera>().gameObject.SetActive(false);
     }
 
-    public delegate void DestroyPlayer();
-    public event DestroyPlayer OnPlayerDestroyed;
     public override void OnInputSourceLeft()
     {
-        OnPlayerDestroyed?.Invoke();
         Sandbox.Destroy(Object);
-    }
-
-    public override void NetworkDestroy()
-    {
-        Cleanup();
     }
 
     public override void NetworkRender()
@@ -68,9 +54,9 @@ public class KccPlayer : NetickKccBase
         if (IsInputSource)  //on local client, we apply the camera rotation using the values set in NetworkUpdate. on proxies, we use the interpolated values
         {
             ApplyRotations(_camAngles);
-            if (RotateWithPhysicsMover && _motor.AttachedRigidbody != null) //apply moving platform rotation interpolation
+            if (KCC.RotateWithPhysicsMover && KCC.Motor.AttachedRigidbody != null) //apply moving platform rotation interpolation
             {
-                PhysicsMover mover = _motor.AttachedRigidbody.GetComponent<PhysicsMover>();
+                PhysicsMover mover = KCC.Motor.AttachedRigidbody.GetComponent<PhysicsMover>();
                 RenderTransform.rotation *= mover.LatestInterpolationRotation;
                 //Quaternion newRot = (RenderTransform.rotation * mover.LatestInterpolationRotation) * Quaternion.Inverse(RenderTransform.rotation);
                 //Debug.Log(newRot.eulerAngles.y);
@@ -78,7 +64,7 @@ public class KccPlayer : NetickKccBase
         }
 
         float height = Crouching ? _locomotion.CrouchedCapsuleHeight : _locomotion.CapsuleStandHeight;
-        RenderTransform.localScale = new Vector3(1, height/2, 1);
+        RenderTransform.localScale = new Vector3(1, height / 2, 1);
     }
 
     private float LerpRotation(float from, float to, float alpha)
@@ -141,12 +127,13 @@ public class KccPlayer : NetickKccBase
         {
             Pitch = Mathf.Clamp(Pitch + input.YawPitchDelta.y, -90, 90);
             Vector2 movementVector = Vector2.ClampMagnitude(input.Movement, 1);
-            LocomotionInputs characterInputs = new LocomotionInputs { 
-                MoveAxisForward  = movementVector.y,
+            LocomotionInputs characterInputs = new LocomotionInputs
+            {
+                MoveAxisForward = movementVector.y,
                 MoveAxisRight = movementVector.x,
                 Sprint = (input.Sprint && movementVector.y > 0),
                 //ForwardVector = Quaternion.Euler(0, YawPitch.x, 0),
-                DeltaCameraRotation = Quaternion.Euler(0, input.YawPitchDelta.x, 0),
+                DeltaCharacterRotation = Quaternion.Euler(0, input.YawPitchDelta.x, 0),
                 JumpDown = input.JumpDown,
             };
 
@@ -161,9 +148,8 @@ public class KccPlayer : NetickKccBase
         }
     }
 
-    public override void PostSimulate()
+    public void PostSimulate()
     {
-        base.PostSimulate();
         ApplyRotations(new Vector2(transform.eulerAngles.y, Pitch));
     }
 

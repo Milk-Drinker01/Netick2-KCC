@@ -22,21 +22,50 @@ public struct KCCNetworkState
     public int AttachedRigidbodyNetworkID;  //this is to make moving platforms work.
 }
 
+interface IKccPlayerCore
+{
+    void PostSimulate(); // interface method (does not have a body)
+}
+
+[RequireComponent(typeof(NetworkTransform))]
 [ExecuteBefore(typeof(NetickKccSimulator))]
-public class NetickKccBase : NetworkBehaviour
+public class NetickKCC : NetworkBehaviour
 {
     [Networked(relevancy: Relevancy.InputSource)] public KCCNetworkState KCCState { get; set; }
     [Networked][Smooth] public Vector3 BaseVelocity { get; set; }
 
+    [Header("NetickKCC.cs handles rollback of the kcc state and motor simulation.")]
+    [Space(10)]
     public bool EnableMovingPlatforms = true;
     public bool RotateWithPhysicsMover = true;
 
-    protected KinematicCharacterMotorNetick _motor;
+    public KinematicCharacterMotorNetick Motor;
+    private IKccPlayerCore _player;
+
+    private void Reset()
+    {
+        Motor = GetComponent<KinematicCharacterMotorNetick>();
+    }
+
+    private void Awake()
+    {
+        TryGetComponent<IKccPlayerCore>(out _player);
+        //_player.SetKCC(this);
+    }
+
+    public override void NetworkStart()
+    {
+        Initialize();
+        SetPhysicsScene();
+    }
+
+    public override void NetworkDestroy()
+    {
+        Cleanup();
+    }
 
     protected void Initialize()    //call this on NetworkStart or NetworkAwake
     {
-        TryGetComponent<KinematicCharacterMotorNetick>(out _motor);
-
         // We disable Settings.AutoSimulation + Settings.Interpolate of KinematicCharacterSystem to essentially handle the simulation ourself
         KinematicCharacterSystem.EnsureCreation();
         KinematicCharacterSystem.Settings.AutoSimulation = false;
@@ -56,13 +85,13 @@ public class NetickKccBase : NetworkBehaviour
 
     protected void SetPhysicsScene()
     {
-        _motor._PhysicsScene = Sandbox.Physics;
+        Motor._PhysicsScene = Sandbox.Physics;
     }
 
     //rollback client state
     public override void NetcodeIntoGameEngine()
     {
-        _motor?.ApplyState(NetickStateToKCCState(KCCState));
+        Motor.ApplyState(NetickStateToKCCState(KCCState));
     }
 
     private KinematicCharacterMotorState NetickStateToKCCState(KCCNetworkState kccNetState)
@@ -103,7 +132,7 @@ public class NetickKccBase : NetworkBehaviour
     //at the end of the tick, set our KCC state
     public override void GameEngineIntoNetcode()
     {
-        KCCState = KCCStateToNetickState(_motor.GetState());
+        KCCState = KCCStateToNetickState(Motor.GetState());
     }
 
     private KCCNetworkState KCCStateToNetickState(KinematicCharacterMotorState state)
@@ -139,24 +168,25 @@ public class NetickKccBase : NetworkBehaviour
 
     public void UpdatePhase1(float deltaTime)
     {
-        
-        _motor.UpdatePhase1(deltaTime);
-        if (RotateWithPhysicsMover && _motor.AttachedRigidbody != null)
+        Motor.UpdatePhase1(deltaTime);
+
+        if (RotateWithPhysicsMover && Motor.AttachedRigidbody != null)
         {
-            PhysicsMover mover = _motor.AttachedRigidbody.GetComponent<PhysicsMover>();
+            PhysicsMover mover = Motor.AttachedRigidbody.GetComponent<PhysicsMover>();
             //Debug.Log((mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)).eulerAngles.y);
-            _motor.SetRotation(_motor.transform.rotation * (mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)));
+            Motor.SetRotation(Motor.transform.rotation * (mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)));
         }
     }
 
     public void UpdatePhase2(float deltaTime)
     {
-        _motor.UpdatePhase2(deltaTime);
-        _motor.Transform.SetPositionAndRotation(_motor.TransientPosition, _motor.TransientRotation);
+        Motor.UpdatePhase2(deltaTime);
+        Motor.Transform.SetPositionAndRotation(Motor.TransientPosition, Motor.TransientRotation);
     }
 
-    public virtual void PostSimulate()
+    public void PostSimulate()
     {
-        BaseVelocity = _motor.BaseVelocity;
+        BaseVelocity = Motor.BaseVelocity;
+        _player.PostSimulate();
     }
 }

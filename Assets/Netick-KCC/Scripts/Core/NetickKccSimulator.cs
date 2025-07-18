@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class NetickKccSimulator : NetickBehaviour
 {
-    public List<NetickKccBase> CharacterMotors = new List<NetickKccBase>();
+    public List<NetickKCC> CharacterMotors = new List<NetickKCC>();
     public List<PhysicsMover> PhysicsMovers = new List<PhysicsMover>();
 
     public override void NetworkFixedUpdate()
@@ -15,7 +15,7 @@ public class NetickKccSimulator : NetickBehaviour
         Simulate(Sandbox.ScaledFixedDeltaTime, CharacterMotors, PhysicsMovers);
     }
 
-    public static void Simulate(float deltaTime, List<NetickKccBase> motors, List<PhysicsMover> movers)
+    public static void Simulate(float deltaTime, List<NetickKCC> motors, List<PhysicsMover> movers)
     {
         int characterMotorsCount = motors.Count;
         int physicsMoversCount = movers.Count;
@@ -48,7 +48,7 @@ public class NetickKccSimulator : NetickBehaviour
         // Character controller update phase 2 and move
         for (int i = 0; i < characterMotorsCount; i++)
         {
-            NetickKccBase motor = motors[i];
+            NetickKCC motor = motors[i];
 
             motor.UpdatePhase2(deltaTime);
 

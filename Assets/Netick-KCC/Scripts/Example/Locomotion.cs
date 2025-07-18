@@ -14,7 +14,8 @@ public struct LocomotionInputs
     public float MoveAxisForward;
     public float MoveAxisRight;
     public bool Sprint;
-    public Quaternion DeltaCameraRotation;
+    public Quaternion CameraRotation;
+    public Quaternion DeltaCharacterRotation;
     public bool JumpDown;
     public bool CrouchDown;
     public bool CrouchUp;
@@ -123,10 +124,10 @@ public class Locomotion : MonoBehaviour, ICharacterController
         Vector3 moveInputVector = Vector3.ClampMagnitude(new Vector3(inputs.MoveAxisRight, 0f, inputs.MoveAxisForward), 1f);
 
         // Calculate camera direction and rotation on the character plane
-        Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.DeltaCameraRotation * Vector3.forward, Motor.CharacterUp).normalized;
+        Vector3 cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.DeltaCharacterRotation * Vector3.forward, Motor.CharacterUp).normalized;
         if (cameraPlanarDirection.sqrMagnitude == 0f)
         {
-            cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.DeltaCameraRotation * Vector3.up, Motor.CharacterUp).normalized;
+            cameraPlanarDirection = Vector3.ProjectOnPlane(inputs.DeltaCharacterRotation * Vector3.up, Motor.CharacterUp).normalized;
         }
         Quaternion cameraPlanarRotation = Quaternion.LookRotation(Motor.TransientRotation * cameraPlanarDirection, Motor.CharacterUp);
 

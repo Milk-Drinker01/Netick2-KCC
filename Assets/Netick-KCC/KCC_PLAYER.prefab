@@ -294,7 +294,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5654542043148214999}
   - component: {fileID: 5721928362494149771}
-  - component: {fileID: -4302345474651264804}
+  - component: {fileID: 5454727004156813384}
+  - component: {fileID: 6644379354300624173}
   - component: {fileID: 5651286471523823300}
   - component: {fileID: 3263674614669310556}
   - component: {fileID: 2005175156869349241}
@@ -348,7 +349,7 @@ MonoBehaviour:
   _PrefabId: 1
   _SceneId: -1
   _RuntimeSceneId: -1
---- !u!114 &-4302345474651264804
+--- !u!114 &5454727004156813384
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -357,20 +358,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 5651286471523823301}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 523b771177d9557418d528bcf21ba0bf, type: 3}
+  m_Script: {fileID: 11500000, guid: 2b7ba4bfeff5a0d43825bb6f12bc873c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <BaseVelocity>k__BackingField: {x: 0, y: 0, z: 0}
-  EnableMovingPlatforms: 1
-  RotateWithPhysicsMover: 1
+  KCC: {fileID: 6644379354300624173}
   _sensitivityX: 1
   _sensitivityY: 1
-  ToggleCrouch: 1
+  ToggleCrouch: 0
   RenderTransform: {fileID: 5650222378909378417}
   CameraTransform: {fileID: 6152984085407390542}
   <Pitch>k__BackingField: 0
   <Crouching>k__BackingField:
     RawValue: 0
+--- !u!114 &6644379354300624173
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5651286471523823301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4597a26f87e8972438c059f4f3ae8f55, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <BaseVelocity>k__BackingField: {x: 0, y: 0, z: 0}
+  EnableMovingPlatforms: 1
+  RotateWithPhysicsMover: 1
+  Motor: {fileID: 3263674614669310556}
 --- !u!114 &5651286471523823300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,7 +505,7 @@ MonoBehaviour:
   Settings: 15
   TransformSpace: 1
   UseForAOIPosition: 1
-  EnablePredictionErrorCorrectionSmoothing: 0
+  EnablePredictionErrorCorrectionSmoothing: 1
   CorrectionMultiplier: 3
   TeleportErrorThreshold: 50
   _interpolationSource: 0
