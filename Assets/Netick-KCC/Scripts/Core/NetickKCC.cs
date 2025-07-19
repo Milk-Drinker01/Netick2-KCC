@@ -88,6 +88,32 @@ public class NetickKCC : NetworkBehaviour
         Motor._PhysicsScene = Sandbox.Physics;
     }
 
+    public void UpdatePhase1(float deltaTime)
+    {
+        if (enabled)
+            Motor.UpdatePhase1(deltaTime);
+
+        if (RotateWithPhysicsMover && Motor.AttachedRigidbody != null)
+        {
+            PhysicsMover mover = Motor.AttachedRigidbody.GetComponent<PhysicsMover>();
+            //Debug.Log((mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)).eulerAngles.y);
+            Motor.SetRotation(Motor.transform.rotation * (mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)));
+        }
+    }
+
+    public void UpdatePhase2(float deltaTime)
+    {
+        if (enabled)
+            Motor.UpdatePhase2(deltaTime);
+        Motor.Transform.SetPositionAndRotation(Motor.TransientPosition, Motor.TransientRotation);
+    }
+
+    public void PostSimulate()
+    {
+        BaseVelocity = Motor.BaseVelocity;
+        _player.PostSimulate();
+    }
+
     //rollback client state
     public override void NetcodeIntoGameEngine()
     {
@@ -163,30 +189,5 @@ public class NetickKCC : NetworkBehaviour
         }
 
         return kccNetState;
-    }
-
-
-    public void UpdatePhase1(float deltaTime)
-    {
-        Motor.UpdatePhase1(deltaTime);
-
-        if (RotateWithPhysicsMover && Motor.AttachedRigidbody != null)
-        {
-            PhysicsMover mover = Motor.AttachedRigidbody.GetComponent<PhysicsMover>();
-            //Debug.Log((mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)).eulerAngles.y);
-            Motor.SetRotation(Motor.transform.rotation * (mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)));
-        }
-    }
-
-    public void UpdatePhase2(float deltaTime)
-    {
-        Motor.UpdatePhase2(deltaTime);
-        Motor.Transform.SetPositionAndRotation(Motor.TransientPosition, Motor.TransientRotation);
-    }
-
-    public void PostSimulate()
-    {
-        BaseVelocity = Motor.BaseVelocity;
-        _player.PostSimulate();
     }
 }
