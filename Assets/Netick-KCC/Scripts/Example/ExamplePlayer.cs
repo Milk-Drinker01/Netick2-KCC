@@ -13,7 +13,7 @@ public struct KccDemoInput : INetworkInput
 }
 
 [RequireComponent(typeof(NetickKCC))]
-//[ExecuteBefore(typeof(NetickKCC))]
+[ExecuteBefore(typeof(NetickKCC))]
 public class ExamplePlayer : NetworkBehaviour, IKccPlayerCore
 {
     [SerializeField] private NetickKCC KCC;
