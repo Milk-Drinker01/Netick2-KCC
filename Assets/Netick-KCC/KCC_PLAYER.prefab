@@ -339,10 +339,10 @@ MonoBehaviour:
   _AoILayer: 0
   _BroadPhaseFilter: 0
   _NarrowPhaseFilter: 0
-  _PredictionMode: 0
   _SpatialPrioritization: 0
-  AddToNetworkLoop: 1
-  _isPersistent: 0
+  _PredictionMode: 0
+  _AddToNetworkLoop: 1
+  _IsPersistent: 0
   PrefabRoot: {fileID: 0}
   Children: []
   PrefabIndex: -1
@@ -428,6 +428,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Capsule: {fileID: 2475450197863541907}
+  FixInternalKccBugs: 1
   CapsuleRadius: 0.5
   CapsuleHeight: 2
   CapsuleYOffset: 1

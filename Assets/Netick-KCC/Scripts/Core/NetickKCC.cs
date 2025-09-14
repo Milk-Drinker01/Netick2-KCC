@@ -93,9 +93,8 @@ public class NetickKCC : NetworkBehaviour
         if (enabled)
             Motor.UpdatePhase1(deltaTime);
 
-        if (RotateWithPhysicsMover && Motor.AttachedRigidbody != null)
+        if (RotateWithPhysicsMover && Motor.AttachedRigidbody != null && Motor.AttachedRigidbody.TryGetComponent<PhysicsMover>(out PhysicsMover mover))
         {
-            PhysicsMover mover = Motor.AttachedRigidbody.GetComponent<PhysicsMover>();
             //Debug.Log((mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)).eulerAngles.y);
             Motor.SetRotation(Motor.transform.rotation * (mover.TransientRotation * Quaternion.Inverse(mover.InitialSimulationRotation)));
         }

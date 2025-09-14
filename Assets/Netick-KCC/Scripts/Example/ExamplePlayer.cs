@@ -54,9 +54,8 @@ public class ExamplePlayer : NetworkBehaviour, IKccPlayerCore
         if (IsInputSource)  //on local client, we apply the camera rotation using the values set in NetworkUpdate. on proxies, we use the interpolated values
         {
             ApplyRotations(_camAngles);
-            if (KCC.RotateWithPhysicsMover && KCC.Motor.AttachedRigidbody != null) //apply moving platform rotation interpolation
+            if (KCC.RotateWithPhysicsMover && KCC.Motor.AttachedRigidbody != null && KCC.Motor.AttachedRigidbody.TryGetComponent<PhysicsMover>(out PhysicsMover mover)) //apply moving platform rotation interpolation
             {
-                PhysicsMover mover = KCC.Motor.AttachedRigidbody.GetComponent<PhysicsMover>();
                 RenderTransform.rotation *= mover.LatestInterpolationRotation;
                 //Quaternion newRot = (RenderTransform.rotation * mover.LatestInterpolationRotation) * Quaternion.Inverse(RenderTransform.rotation);
                 //Debug.Log(newRot.eulerAngles.y);
