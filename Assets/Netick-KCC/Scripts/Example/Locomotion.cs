@@ -233,8 +233,13 @@ public class Locomotion : MonoBehaviour, ICharacterController
                         // Smooth movement Velocity
                         //currentVelocity = Vector3.Lerp(currentVelocity, targetMovementVelocity, 1f - Mathf.Exp(-StableMovementSharpness * deltaTime));
                         //Debug.Log(Vector3.Dot(currentVelocity.normalized, targetMovementVelocity.normalized));
-                        float rate = Mathf.Lerp(DecelerationRate, AccelerationRate, (Vector3.Dot(currentVelocity.normalized, targetMovementVelocity.normalized) + 1) / 2);
-                        currentVelocity = Vector3.MoveTowards(currentVelocity, targetMovementVelocity, (currentVelocity.sqrMagnitude < targetMovementVelocity.sqrMagnitude ? rate : DecelerationRate) * deltaTime);
+                        float DirectionDot = (Vector3.Dot(currentVelocity.normalized, targetMovementVelocity.normalized) + 1) / 2;
+                        float rate = Mathf.Lerp(DecelerationRate, AccelerationRate, DirectionDot);  //decelerate when target velocity is opposite of current velocity.
+
+                        float speedRatio = Mathf.Clamp01(targetMovementVelocity.sqrMagnitude / Mathf.Max(currentVelocity.sqrMagnitude, 0.0001f));
+                        rate = Mathf.Lerp(DecelerationRate, rate, speedRatio);  //decelerate when target velocity < current velocity
+                        
+                        currentVelocity = Vector3.MoveTowards(currentVelocity, targetMovementVelocity, rate * deltaTime);
                     }
                     // Air movement
                     else
